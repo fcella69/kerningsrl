@@ -6,9 +6,35 @@ import styles from "./Hero.module.css";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { HiOutlineArrowDown } from "react-icons/hi";
 
-const ROTATING_WORDS = ["strateghi", "designer", "creator"];
+type HeroCMS = {
+  fixedWord?: string; // es: "siamo"
+  rotatingWords?: string[]; // es: ["strateghi", "designer", "creator"]
+  ctaLabel?: string; // es: "Scopri di più"
+  address?: string; // es: "Via Sanremo, 39 · 85100 Potenza (PZ)"
+};
 
-export default function Hero() {
+type HeroProps = {
+  hero?: HeroCMS;
+};
+
+const FALLBACK: Required<HeroCMS> = {
+  fixedWord: "siamo",
+  rotatingWords: ["strateghi", "designer", "creator"],
+  ctaLabel: "Scopri di più",
+  address: "Via Sanremo, 39 · 85100 Potenza (PZ)",
+};
+
+export default function Hero({ hero }: HeroProps) {
+  const data: Required<HeroCMS> = {
+    fixedWord: hero?.fixedWord?.trim() || FALLBACK.fixedWord,
+    rotatingWords:
+      hero?.rotatingWords?.filter(Boolean).map((w) => String(w))?.length
+        ? hero!.rotatingWords!.filter(Boolean).map((w) => String(w))
+        : FALLBACK.rotatingWords,
+    ctaLabel: hero?.ctaLabel?.trim() || FALLBACK.ctaLabel,
+    address: hero?.address?.trim() || FALLBACK.address,
+  };
+
   const titleWordsRef = useRef<HTMLSpanElement[]>([]);
   const rotatingWordRef = useRef<HTMLSpanElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
@@ -33,8 +59,10 @@ export default function Hero() {
     }
 
     /* =========================
-       TYPEWRITER
+       TYPEWRITER (da CMS)
     ========================= */
+    const ROTATING_WORDS = data.rotatingWords;
+
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -44,7 +72,7 @@ export default function Hero() {
       const el = rotatingWordRef.current;
       if (!el) return;
 
-      const current = ROTATING_WORDS[wordIndex];
+      const current = ROTATING_WORDS[wordIndex] ?? "";
 
       if (!isDeleting) {
         charIndex++;
@@ -90,10 +118,9 @@ export default function Hero() {
     const computeRange = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      // range ampio: permette a un blob a destra di andare a sinistra ecc.
       return {
         x: w * 1.1,
-        y: h * 1,
+        y: h * 1.0,
       };
     };
 
@@ -102,8 +129,7 @@ export default function Hero() {
 
       const { x, y } = computeRange();
 
-      // alterna “slow drift” e “quick jump”
-      const isQuick = Math.random() < 0.28; // ~28% scatti rapidi
+      const isQuick = Math.random() < 0.28;
       const duration = isQuick ? rand(1.8, 3.2) : rand(6.5, 14.5);
       const ease = isQuick ? "power2.out" : "sine.inOut";
 
@@ -118,13 +144,11 @@ export default function Hero() {
       });
     };
 
-    // inizializza: togli qualsiasi animation css residua e set pos iniziale
     blobsRef.current.forEach((blob, i) => {
       if (!blob) return;
 
       gsap.set(blob, { x: 0, y: 0, rotation: 0 });
 
-      // micro offset iniziale diverso per ogni blob
       gsap.to(blob, {
         x: rand(-120, 120),
         y: rand(-120, 120),
@@ -137,15 +161,18 @@ export default function Hero() {
     });
 
     /* =========================
-       MOUSE GLOW (più smooth con gsap.quickTo)
+       MOUSE GLOW (smooth con quickTo)
     ========================= */
     const glow = mouseGlowRef.current;
-    const quickX = glow ? gsap.quickTo(glow, "x", { duration: 0.25, ease: "power3.out" }) : null;
-    const quickY = glow ? gsap.quickTo(glow, "y", { duration: 0.25, ease: "power3.out" }) : null;
+    const quickX = glow
+      ? gsap.quickTo(glow, "x", { duration: 0.25, ease: "power3.out" })
+      : null;
+    const quickY = glow
+      ? gsap.quickTo(glow, "y", { duration: 0.25, ease: "power3.out" })
+      : null;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!glow || !quickX || !quickY) return;
-      // usiamo x/y così non rompiamo il transform base (-50%, -50%) del css
       quickX(e.clientX);
       quickY(e.clientY);
     };
@@ -159,7 +186,8 @@ export default function Hero() {
     let removeMagnet = () => {};
 
     if (btn) {
-      const strength = 18; // più piccolo = più magnetico
+      const strength = 18;
+
       const onMove = (e: MouseEvent) => {
         const rect = btn.getBoundingClientRect();
         const dx = e.clientX - (rect.left + rect.width / 2);
@@ -197,14 +225,16 @@ export default function Hero() {
       window.removeEventListener("mousemove", handleMouseMove);
       removeMagnet();
 
-      // kill tweens per evitare duplicazioni in StrictMode
       blobsRef.current.forEach((b) => b && gsap.killTweensOf(b));
       if (glow) gsap.killTweensOf(glow);
     };
-  }, []);
+    // importante: l'effetto dipende dalle parole che arrivano dal CMS
+  }, [data.rotatingWords.join("|")]);
 
   const scrollNext = () => {
-    document.querySelector("#next-section")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .querySelector("#next-section")
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -236,7 +266,7 @@ export default function Hero() {
               if (el) titleWordsRef.current[0] = el;
             }}
           >
-            siamo
+            {data.fixedWord}
           </span>
           <br />
           <span className={styles.typing}>
@@ -250,10 +280,14 @@ export default function Hero() {
 
       {/* FOOTER */}
       <div className={styles.heroFooter}>
-        <div className={styles.address}>Via Sanremo, 39 · 85100 Potenza (PZ)</div>
+        <div className={styles.address}>{data.address}</div>
 
-        <button ref={scrollBtnRef} onClick={scrollNext} className={styles.scrollButton}>
-          <span>Scopri di più</span>
+        <button
+          ref={scrollBtnRef}
+          onClick={scrollNext}
+          className={styles.scrollButton}
+        >
+          <span>{data.ctaLabel}</span>
           <HiOutlineArrowDown className={styles.scrollIcon} />
         </button>
 
