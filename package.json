@@ -20,5 +20,11 @@
     "gsap": "^3.14.2",
     "lucide-react": "^0.563.0",
     "react-icons": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18 <21"
   }
+
 }
+
+
