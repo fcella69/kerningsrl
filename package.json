@@ -15,5 +15,10 @@
     "@babel/core": "^7.29.0",
     "@babel/traverse": "^7.29.0",
     "@babel/types": "^7.29.0"
+  },
+  "dependencies": {
+    "gsap": "^3.14.2",
+    "lucide-react": "^0.563.0",
+    "react-icons": "^5.5.0"
   }
 }
