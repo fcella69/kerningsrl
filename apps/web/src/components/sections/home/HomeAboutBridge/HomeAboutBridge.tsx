@@ -1,13 +1,16 @@
 import Link from "next/link";
 
-import type { HomeAboutBridgeData } from "../types";
+import type {
+  HomeAboutBridgeData,
+  HomeAboutBridgeHighlight,
+} from "../types";
 import styles from "./HomeAboutBridge.module.css";
 
 type HomeAboutBridgeProps = {
   data?: HomeAboutBridgeData;
 };
 
-const FALLBACK_HIGHLIGHTS = [
+const FALLBACK_HIGHLIGHTS: HomeAboutBridgeHighlight[] = [
   {
     title: "Visione",
     text: "Ogni progetto nasce da una direzione precisa, non da una somma casuale di elementi.",
@@ -36,9 +39,9 @@ export default function HomeAboutBridge({
   const ctaHref = data?.ctaHref?.trim() || "/chi-siamo";
 
   const highlights =
-    data?.highlights?.filter((item) => item?.title || item?.text) ??
-    [];
-  const visibleHighlights = highlights.length
+    data?.highlights?.filter((item) => item?.title || item?.text) ?? [];
+
+  const visibleHighlights: HomeAboutBridgeHighlight[] = highlights.length
     ? highlights
     : FALLBACK_HIGHLIGHTS;
 

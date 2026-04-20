@@ -8,14 +8,18 @@ import {
   HiOutlineArrowRight,
 } from "react-icons/hi";
 
-import type { HomeStrengthsSectionData } from "../types";
+import type {
+  HomeStrengthItem,
+  HomeSolutionCard,
+  HomeStrengthsSectionData,
+} from "../types";
 import styles from "./StrengthsSolutions.module.css";
 
 type StrengthsSolutionsProps = {
   data?: HomeStrengthsSectionData;
 };
 
-const FALLBACK_STRENGTHS = [
+const FALLBACK_STRENGTHS: HomeStrengthItem[] = [
   {
     title: "Metodo chiaro",
     text: "Ogni progetto parte da una direzione precisa, con obiettivi, struttura e priorità definite fin dall’inizio.",
@@ -34,7 +38,7 @@ const FALLBACK_STRENGTHS = [
   },
 ];
 
-const FALLBACK_SOLUTIONS = [
+const FALLBACK_SOLUTIONS: HomeSolutionCard[] = [
   {
     eyebrow: "Solution",
     title: "Web Design",
@@ -83,9 +87,10 @@ export default function StrengthsSolutions({
     data?.intro?.trim() ||
     "Un modo di lavorare che mette insieme visione, composizione e concretezza, senza compromessi sulla qualità.";
 
-  const strengths =
+  const strengths: HomeStrengthItem[] =
     data?.strengths?.filter((item) => item?.title || item?.text) ?? [];
-  const solutionCards =
+
+  const solutionCards: HomeSolutionCard[] =
     data?.solutionsCards?.filter((item) => item?.title || item?.text) ?? [];
 
   const solutionsEyebrow =
@@ -98,8 +103,11 @@ export default function StrengthsSolutions({
   const solutionsCtaHref =
     data?.solutionsCtaHref?.trim() || "/soluzioni-digitali";
 
-  const visibleStrengths = strengths.length ? strengths : FALLBACK_STRENGTHS;
-  const visibleSolutions = solutionCards.length
+  const visibleStrengths: HomeStrengthItem[] = strengths.length
+    ? strengths
+    : FALLBACK_STRENGTHS;
+
+  const visibleSolutions: HomeSolutionCard[] = solutionCards.length
     ? solutionCards
     : FALLBACK_SOLUTIONS;
 
