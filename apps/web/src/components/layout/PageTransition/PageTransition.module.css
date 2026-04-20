@@ -13,7 +13,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 
 .curtain {

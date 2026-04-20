@@ -44,13 +44,14 @@ export default function PageTransition({
 
         gsap.fromTo(
           page,
-          { opacity: 0, y: 18 },
+          { opacity: 0 },
           {
             opacity: 1,
-            y: 0,
-            duration: 0.72,
-            ease: "power3.out",
-            delay: 0.08,
+            duration: 0.6,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(page, { clearProps: "opacity" });
+            },
           }
         );
 
@@ -63,8 +64,11 @@ export default function PageTransition({
           { opacity: 0 },
           {
             opacity: 1,
-            duration: 0.28,
+            duration: 0.25,
             ease: "power2.out",
+            onComplete: () => {
+              gsap.set(page, { clearProps: "opacity" });
+            },
           }
         );
         return;
@@ -79,7 +83,7 @@ export default function PageTransition({
           duration: 0.48,
           ease: "power4.inOut",
         })
-        .set(page, { opacity: 0, y: 18 }, 0.2)
+        .set(page, { opacity: 0.08 }, 0.18)
         .add(() => {
           window.scrollTo({
             top: 0,
@@ -95,16 +99,16 @@ export default function PageTransition({
         })
         .fromTo(
           page,
-          { opacity: 0, y: 20 },
+          { opacity: 0 },
           {
             opacity: 1,
-            y: 0,
-            duration: 0.56,
-            ease: "power3.out",
+            duration: 0.48,
+            ease: "power2.out",
           },
-          "-=0.30"
+          "-=0.28"
         )
-        .set(curtain, { autoAlpha: 0 });
+        .set(curtain, { autoAlpha: 0 })
+        .set(page, { clearProps: "opacity" });
     }, root);
 
     return () => ctx.revert();

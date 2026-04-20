@@ -7,6 +7,9 @@ import { buildSeoMetadata } from "@/lib/seo/buildSeoMetadata";
 import {
   projectBySlugQuery,
   PROJECT_SEO_BY_SLUG_QUERY,
+  portfolioPageQuery,
+  portfolioProjectsOrderedQuery,
+  portfolioProjectsFallbackQuery,
 } from "@/lib/sanity/queries";
 
 type ProjectPageProps = {
@@ -15,26 +18,43 @@ type ProjectPageProps = {
   }>;
 };
 
+type ProjectNavItem = {
+  title: string;
+  category?: string;
+  slug: string;
+  imageUrl?: string;
+};
+
 type RawProjectData = {
   title: string;
   category?: string;
   slug: string;
-  coverImageUrl?: string;
-  description?: PortableTextBlock[];
-  gallery?: {
-    url?: string;
-  }[];
-};
 
-type ProjectData = {
-  title: string;
-  category?: string;
-  slug: string;
   coverImageUrl?: string;
+  coverImageAlt?: string;
+
+  overviewEyebrow?: string;
+  overviewTitle?: string;
   description?: PortableTextBlock[];
-  gallery?: {
-    url: string;
-  }[];
+
+  services?: string[];
+  liveSiteLabel?: string;
+  liveSiteUrl?: string;
+
+  galleryTopWideImageUrl?: string;
+  galleryTopWideImageAlt?: string;
+
+  galleryPairLeftImageUrl?: string;
+  galleryPairLeftImageAlt?: string;
+
+  galleryPairRightImageUrl?: string;
+  galleryPairRightImageAlt?: string;
+
+  galleryBottomWideImageUrl?: string;
+  galleryBottomWideImageAlt?: string;
+
+  galleryFinalWideImageUrl?: string;
+  galleryFinalWideImageAlt?: string;
 };
 
 export async function generateMetadata({
@@ -69,13 +89,35 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return null;
   }
 
-  const normalizedProject: ProjectData = {
-    ...project,
-    gallery:
-      project.gallery?.filter(
-        (item): item is { url: string } => typeof item?.url === "string" && item.url.length > 0
-      ) ?? [],
-  };
+  const pageMeta = await sanityFetch<{
+    featuredIds?: string[];
+  } | null>(portfolioPageQuery);
 
-  return <ProjectTemplate project={normalizedProject} />;
+  const hasCustomOrder = (pageMeta?.featuredIds?.length ?? 0) > 0;
+
+  const orderedProjects: ProjectNavItem[] = hasCustomOrder
+    ? (
+        await sanityFetch<{
+          projects: ProjectNavItem[];
+        } | null>(portfolioProjectsOrderedQuery)
+      )?.projects ?? []
+    : (await sanityFetch<ProjectNavItem[]>(portfolioProjectsFallbackQuery)) ?? [];
+
+  const currentIndex = orderedProjects.findIndex((item) => item.slug === slug);
+
+  const previousProject =
+    currentIndex > 0 ? orderedProjects[currentIndex - 1] : null;
+
+  const nextProject =
+    currentIndex !== -1 && currentIndex < orderedProjects.length - 1
+      ? orderedProjects[currentIndex + 1]
+      : null;
+
+  return (
+    <ProjectTemplate
+      project={project}
+      previousProject={previousProject}
+      nextProject={nextProject}
+    />
+  );
 }

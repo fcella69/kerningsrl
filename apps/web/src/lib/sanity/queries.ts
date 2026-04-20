@@ -174,11 +174,46 @@ export const projectBySlugQuery = groq`
     title,
     category,
     "slug": slug.current,
+
     "coverImageUrl": coverImage.asset->url,
+    "coverImageAlt": coalesce(coverImageAlt, title),
+
+    overviewEyebrow,
+    overviewTitle,
     description,
-    "gallery": gallery[]{
-      "url": asset->url
-    }
+    services,
+    liveSiteLabel,
+    liveSiteUrl,
+
+    "galleryTopWideImageUrl": coalesce(
+      galleryTopWideImage.asset->url,
+      gallery[0].asset->url
+    ),
+    galleryTopWideImageAlt,
+
+    "galleryPairLeftImageUrl": coalesce(
+      galleryPairLeftImage.asset->url,
+      gallery[1].asset->url
+    ),
+    galleryPairLeftImageAlt,
+
+    "galleryPairRightImageUrl": coalesce(
+      galleryPairRightImage.asset->url,
+      gallery[2].asset->url
+    ),
+    galleryPairRightImageAlt,
+
+    "galleryBottomWideImageUrl": coalesce(
+      galleryBottomWideImage.asset->url,
+      gallery[3].asset->url
+    ),
+    galleryBottomWideImageAlt,
+
+    "galleryFinalWideImageUrl": coalesce(
+      galleryFinalWideImage.asset->url,
+      gallery[4].asset->url
+    ),
+    galleryFinalWideImageAlt
   }
 `;
 
