@@ -1,39 +1,67 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import styles from "./Hero.module.css";
+import { useEffect, useMemo, useRef } from "react";
+import type { IconType } from "react-icons";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { HiOutlineArrowDown } from "react-icons/hi";
+import gsap from "gsap";
 
-type HeroCMS = {
-  fixedWord?: string; // es: "siamo"
-  rotatingWords?: string[]; // es: ["strateghi", "designer", "creator"]
-  ctaLabel?: string; // es: "Scopri di più"
-  address?: string; // es: "Via Sanremo, 39 · 85100 Potenza (PZ)"
-};
+import type { HomeHeroData } from "../types";
+import styles from "./Hero.module.css";
 
 type HeroProps = {
-  hero?: HeroCMS;
+  hero?: HomeHeroData;
 };
 
-const FALLBACK: Required<HeroCMS> = {
+const FALLBACK: Required<
+  Pick<HomeHeroData, "fixedWord" | "rotatingWords" | "ctaLabel" | "address">
+> & {
+  socials: { label: string; url: string }[];
+} = {
   fixedWord: "siamo",
   rotatingWords: ["strateghi", "designer", "creator"],
   ctaLabel: "Scopri di più",
   address: "Via Sanremo, 39 · 85100 Potenza (PZ)",
+  socials: [
+    { label: "Facebook", url: "#" },
+    { label: "Instagram", url: "#" },
+    { label: "LinkedIn", url: "#" },
+  ],
 };
 
+const SOCIAL_ICONS: Record<string, IconType> = {
+  facebook: FaFacebookF,
+  instagram: FaInstagram,
+  linkedin: FaLinkedinIn,
+};
+
+function getSocialIcon(label?: string) {
+  const key = label?.trim().toLowerCase() ?? "";
+  return SOCIAL_ICONS[key] ?? null;
+}
+
 export default function Hero({ hero }: HeroProps) {
-  const data: Required<HeroCMS> = {
-    fixedWord: hero?.fixedWord?.trim() || FALLBACK.fixedWord,
-    rotatingWords:
-      hero?.rotatingWords?.filter(Boolean).map((w) => String(w))?.length
-        ? hero!.rotatingWords!.filter(Boolean).map((w) => String(w))
-        : FALLBACK.rotatingWords,
-    ctaLabel: hero?.ctaLabel?.trim() || FALLBACK.ctaLabel,
-    address: hero?.address?.trim() || FALLBACK.address,
-  };
+  const data = useMemo(() => {
+    const rotatingWords =
+      hero?.rotatingWords?.map((word) => String(word).trim()).filter(Boolean) ??
+      [];
+
+    const socials =
+      hero?.socials
+        ?.map((item) => ({
+          label: item?.label?.trim() || "",
+          url: item?.url?.trim() || "",
+        }))
+        .filter((item) => item.label && item.url) ?? [];
+
+    return {
+      fixedWord: hero?.fixedWord?.trim() || FALLBACK.fixedWord,
+      rotatingWords: rotatingWords.length ? rotatingWords : FALLBACK.rotatingWords,
+      ctaLabel: hero?.ctaLabel?.trim() || FALLBACK.ctaLabel,
+      address: hero?.address?.trim() || FALLBACK.address,
+      socials: socials.length ? socials : FALLBACK.socials,
+    };
+  }, [hero]);
 
   const titleWordsRef = useRef<HTMLSpanElement[]>([]);
   const rotatingWordRef = useRef<HTMLSpanElement>(null);
@@ -43,10 +71,8 @@ export default function Hero({ hero }: HeroProps) {
   const scrollBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    /* =========================
-       ENTRATA TESTO (GSAP)
-    ========================= */
     const titleEls = titleWordsRef.current.filter(Boolean);
+
     if (titleEls.length) {
       gsap.from(titleEls, {
         y: 120,
@@ -58,11 +84,7 @@ export default function Hero({ hero }: HeroProps) {
       });
     }
 
-    /* =========================
-       TYPEWRITER (da CMS)
-    ========================= */
-    const ROTATING_WORDS = data.rotatingWords;
-
+    const rotatingWords = data.rotatingWords;
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -72,23 +94,25 @@ export default function Hero({ hero }: HeroProps) {
       const el = rotatingWordRef.current;
       if (!el) return;
 
-      const current = ROTATING_WORDS[wordIndex] ?? "";
+      const current = rotatingWords[wordIndex] ?? "";
 
       if (!isDeleting) {
-        charIndex++;
+        charIndex += 1;
         el.textContent = current.slice(0, charIndex);
 
         if (charIndex === current.length) {
           if (pauseTimeout) clearTimeout(pauseTimeout);
-          pauseTimeout = setTimeout(() => (isDeleting = true), 1200);
+          pauseTimeout = setTimeout(() => {
+            isDeleting = true;
+          }, 1200);
         }
       } else {
-        charIndex--;
+        charIndex -= 1;
         el.textContent = current.slice(0, charIndex);
 
         if (charIndex === 0) {
           isDeleting = false;
-          wordIndex = (wordIndex + 1) % ROTATING_WORDS.length;
+          wordIndex = (wordIndex + 1) % rotatingWords.length;
         }
       }
     };
@@ -103,66 +127,58 @@ export default function Hero({ hero }: HeroProps) {
       ease: "power1.inOut",
     });
 
-    /* =========================
-       BLOB MOVEMENT (GSAP - RANDOM, LIBERO, NON FISSO)
-       - movimento “a target” random nello schermo
-       - alterna lentezza e scatti
-    ========================= */
-    const prefersReduced =
+    const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const rand = gsap.utils.random;
+    const random = gsap.utils.random;
 
     const computeRange = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
       return {
-        x: w * 1.1,
-        y: h * 1.0,
+        x: width * 1.1,
+        y: height,
       };
     };
 
     const animateBlob = (blob: HTMLDivElement) => {
-      if (prefersReduced) return;
+      if (prefersReducedMotion) return;
 
       const { x, y } = computeRange();
-
       const isQuick = Math.random() < 0.28;
-      const duration = isQuick ? rand(1.8, 3.2) : rand(6.5, 14.5);
+      const duration = isQuick ? random(1.8, 3.2) : random(6.5, 14.5);
       const ease = isQuick ? "power2.out" : "sine.inOut";
 
       gsap.to(blob, {
-        x: rand(-x, x),
-        y: rand(-y, y),
-        scale: rand(0.75, 1.35),
-        rotation: rand(-25, 25),
+        x: random(-x, x),
+        y: random(-y, y),
+        scale: random(0.75, 1.35),
+        rotation: random(-25, 25),
         duration,
         ease,
         onComplete: () => animateBlob(blob),
       });
     };
 
-    blobsRef.current.forEach((blob, i) => {
+    blobsRef.current.forEach((blob, index) => {
       if (!blob) return;
 
       gsap.set(blob, { x: 0, y: 0, rotation: 0 });
 
       gsap.to(blob, {
-        x: rand(-120, 120),
-        y: rand(-120, 120),
-        scale: rand(0.9, 1.15),
-        duration: rand(1.2, 2.6),
+        x: random(-120, 120),
+        y: random(-120, 120),
+        scale: random(0.9, 1.15),
+        duration: random(1.2, 2.6),
         ease: "power2.out",
-        delay: i * 0.06,
+        delay: index * 0.06,
         onComplete: () => animateBlob(blob),
       });
     });
 
-    /* =========================
-       MOUSE GLOW (smooth con quickTo)
-    ========================= */
     const glow = mouseGlowRef.current;
     const quickX = glow
       ? gsap.quickTo(glow, "x", { duration: 0.25, ease: "power3.out" })
@@ -171,29 +187,26 @@ export default function Hero({ hero }: HeroProps) {
       ? gsap.quickTo(glow, "y", { duration: 0.25, ease: "power3.out" })
       : null;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (event: MouseEvent) => {
       if (!glow || !quickX || !quickY) return;
-      quickX(e.clientX);
-      quickY(e.clientY);
+      quickX(event.clientX);
+      quickY(event.clientY);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    /* =========================
-       MAGNETIC BUTTON (corretto: dentro useEffect)
-    ========================= */
-    const btn = scrollBtnRef.current;
+    const button = scrollBtnRef.current;
     let removeMagnet = () => {};
 
-    if (btn) {
+    if (button) {
       const strength = 18;
 
-      const onMove = (e: MouseEvent) => {
-        const rect = btn.getBoundingClientRect();
-        const dx = e.clientX - (rect.left + rect.width / 2);
-        const dy = e.clientY - (rect.top + rect.height / 2);
+      const onMove = (event: MouseEvent) => {
+        const rect = button.getBoundingClientRect();
+        const dx = event.clientX - (rect.left + rect.width / 2);
+        const dy = event.clientY - (rect.top + rect.height / 2);
 
-        gsap.to(btn, {
+        gsap.to(button, {
           x: dx / strength,
           y: dy / strength,
           duration: 0.28,
@@ -202,7 +215,7 @@ export default function Hero({ hero }: HeroProps) {
       };
 
       const onLeave = () => {
-        gsap.to(btn, {
+        gsap.to(button, {
           x: 0,
           y: 0,
           duration: 0.65,
@@ -210,12 +223,12 @@ export default function Hero({ hero }: HeroProps) {
         });
       };
 
-      btn.addEventListener("mousemove", onMove);
-      btn.addEventListener("mouseleave", onLeave);
+      button.addEventListener("mousemove", onMove);
+      button.addEventListener("mouseleave", onLeave);
 
       removeMagnet = () => {
-        btn.removeEventListener("mousemove", onMove);
-        btn.removeEventListener("mouseleave", onLeave);
+        button.removeEventListener("mousemove", onMove);
+        button.removeEventListener("mouseleave", onLeave);
       };
     }
 
@@ -225,45 +238,42 @@ export default function Hero({ hero }: HeroProps) {
       window.removeEventListener("mousemove", handleMouseMove);
       removeMagnet();
 
-      blobsRef.current.forEach((b) => b && gsap.killTweensOf(b));
+      blobsRef.current.forEach((blob) => blob && gsap.killTweensOf(blob));
       if (glow) gsap.killTweensOf(glow);
     };
-    // importante: l'effetto dipende dalle parole che arrivano dal CMS
   }, [data.rotatingWords.join("|")]);
 
   const scrollNext = () => {
-    document
-      .querySelector("#next-section")
-      ?.scrollIntoView({ behavior: "smooth" });
+    document.querySelector("#next-section")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
     <section className={styles.hero}>
       <div className={styles.noise} />
 
-      {/* BACKGROUND BLOBS */}
       <div className={styles.background}>
-        {[0, 1, 2, 3].map((_, i) => (
+        {[0, 1, 2, 3].map((_, index) => (
           <div
-            key={i}
+            key={index}
             className={styles.blob}
-            ref={(el) => {
-              if (el) blobsRef.current[i] = el;
+            ref={(element) => {
+              if (element) blobsRef.current[index] = element;
             }}
           />
         ))}
       </div>
 
-      {/* MOUSE GLOW */}
       <div ref={mouseGlowRef} className={styles.mouseGlow} />
 
-      {/* CONTENT */}
       <div className={styles.content}>
         <h1 className={styles.title}>
           <span
             className={styles.word}
-            ref={(el) => {
-              if (el) titleWordsRef.current[0] = el;
+            ref={(element) => {
+              if (element) titleWordsRef.current[0] = element;
             }}
           >
             {data.fixedWord}
@@ -278,7 +288,6 @@ export default function Hero({ hero }: HeroProps) {
         </h1>
       </div>
 
-      {/* FOOTER */}
       <div className={styles.heroFooter}>
         <div className={styles.address}>{data.address}</div>
 
@@ -286,24 +295,29 @@ export default function Hero({ hero }: HeroProps) {
           ref={scrollBtnRef}
           onClick={scrollNext}
           className={styles.scrollButton}
+          type="button"
         >
           <span>{data.ctaLabel}</span>
           <HiOutlineArrowDown className={styles.scrollIcon} />
         </button>
 
         <div className={styles.socials}>
-          <a href="#">
-            <FaFacebookF />
-            <span>Facebook</span>
-          </a>
-          <a href="#">
-            <FaInstagram />
-            <span>Instagram</span>
-          </a>
-          <a href="#">
-            <FaLinkedinIn />
-            <span>LinkedIn</span>
-          </a>
+          {data.socials.map((social) => {
+            const Icon = getSocialIcon(social.label);
+
+            return (
+              <a
+                key={`${social.label}-${social.url}`}
+                href={social.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={social.label}
+              >
+                {Icon ? <Icon /> : null}
+                <span>{social.label}</span>
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,0 +1,120 @@
+.section {
+  padding: 0 0 150px;
+}
+
+.inner {
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.82fr);
+  gap: 56px;
+  align-items: start;
+}
+
+.reverse {
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.82fr);
+}
+
+.title {
+  position: relative;
+  max-width: 15ch;
+  padding-top: 28px;
+  margin: 0;
+  font-size: clamp(2.3rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: pre-line;
+  text-wrap: balance;
+}
+
+.title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 82px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 22px rgba(238, 98, 36, 0.34);
+}
+
+.body {
+  margin: 0;
+  padding-top: 12px;
+  max-width: 56ch;
+  font-size: 1.04rem;
+  line-height: 1.9;
+  color: var(--color-text-muted);
+  white-space: pre-line;
+}
+
+.imageWrap {
+  position: relative;
+  width: min(1200px, 88%);
+  margin: 60px auto 0;
+  aspect-ratio: 17 / 7;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.imageWrap::after {
+  content: "";
+  position: absolute;
+  right: 22px;
+  top: 22px;
+  width: 74px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 20px rgba(238, 98, 36, 0.28);
+}
+
+.image {
+  object-fit: cover;
+}
+
+@media (max-width: 980px) {
+  .top,
+  .reverse {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .title {
+    max-width: 100%;
+  }
+
+  .body {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 0 0 112px;
+  }
+
+  .inner {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .title {
+    padding-top: 24px;
+    letter-spacing: 0.014em;
+  }
+
+  .imageWrap {
+    width: 100%;
+    margin-top: 28px;
+    aspect-ratio: 1 / 0.88;
+    border-radius: 24px;
+  }
+}

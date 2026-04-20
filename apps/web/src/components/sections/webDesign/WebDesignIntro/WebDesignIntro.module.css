@@ -1,0 +1,147 @@
+.section {
+  padding: 85px 0 130px 0;
+}
+
+.inner {
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
+  gap: 44px;
+  align-items: center;
+}
+
+.copy {
+  max-width: 720px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.1rem, 3.3vw, 3.6rem);
+  line-height: 1.06;
+  letter-spacing: 0.05em;
+  white-space: pre-line;
+  text-wrap: balance;
+}
+
+.body {
+  margin: 24px 0 0;
+  font-size: 1.03rem;
+  line-height: 1.92;
+  color: var(--color-text-muted);
+  white-space: pre-line;
+}
+
+.visual {
+  position: relative;
+}
+
+.imageFrame {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(16, 74, 156, 0.18), transparent 28%),
+    radial-gradient(circle at 82% 20%, rgba(238, 98, 36, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
+    rgba(7, 10, 22, 0.86);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.imageFrame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+  background-size: 38px 38px;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 520px;
+  padding: 22px;
+}
+
+.placeholderTop {
+  height: 186px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 24% 24%, rgba(238, 98, 36, 0.18), transparent 26%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.placeholderBody {
+  display: grid;
+  gap: 18px;
+}
+
+.placeholderBody div {
+  min-height: 86px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .copy {
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: 92px;
+  }
+
+  .inner {
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .title {
+    font-size: clamp(1.85rem, 8vw, 2.7rem);
+  }
+
+  .body {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .imageFrame,
+  .placeholder {
+    min-height: 400px;
+    border-radius: 24px;
+  }
+
+  .placeholder {
+    padding: 18px;
+  }
+
+  .placeholderTop {
+    height: 140px;
+    border-radius: 18px;
+  }
+}

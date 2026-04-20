@@ -1,16 +1,42 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import styles from "./FullscreenMenu.module.css";
 import { FaInstagram, FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 
+/* =========================
+   TYPES
+========================= */
+
+type MenuItem = {
+  label?: string;
+  link?: string;
+};
+
+type SocialItem = {
+  label?: string;
+  url?: string;
+};
+
+type MenuData = {
+  menuLeft?: MenuItem[];
+  menuRightTitle?: string;
+  menuRightTitleLink?: string;
+  menuRight?: MenuItem[];
+  address?: string;
+  bottomTags?: string;
+  socials?: SocialItem[];
+};
+
 type Props = {
   open: boolean;
   onClose: () => void;
+  data?: MenuData;
 };
 
-export default function FullscreenMenu({ open, onClose }: Props) {
+export default function FullscreenMenu({ open, onClose, data }: Props) {
   const [shouldRender, setShouldRender] = useState(open);
 
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -20,7 +46,42 @@ export default function FullscreenMenu({ open, onClose }: Props) {
 
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
-  // 1) evita flash: prima del paint settiamo hidden
+  const menuLeft =
+    data?.menuLeft?.length
+      ? data.menuLeft
+      : [
+          { label: "Home", link: "/" },
+          { label: "Chi siamo", link: "/chi-siamo" },
+          { label: "Portfolio", link: "/portfolio" },
+          { label: "Contatti", link: "/contatti" },
+        ];
+
+  const menuRightTitle = data?.menuRightTitle || "Soluzioni Digitali";
+  const menuRightTitleLink = data?.menuRightTitleLink?.trim() || "/soluzioni-digitali";
+
+  const menuRight =
+    data?.menuRight?.length
+      ? data.menuRight
+      : [
+          { label: "Web Design", link: "/web-design" },
+          { label: "Social & Advertising", link: "/social-advertising" },
+          { label: "Brand Identity", link: "/brand-identity" },
+          { label: "Progetti Custom", link: "/progetti-custom" },
+        ];
+
+  const address = data?.address || "Via Sanremo, 39 · 85100 Potenza (PZ)";
+  const bottomTags =
+    data?.bottomTags || "Startup · PMI · Brand culturali · Professionisti";
+
+  const socials =
+    data?.socials?.length
+      ? data.socials
+      : [
+          { label: "Instagram", url: "#" },
+          { label: "Facebook", url: "#" },
+          { label: "LinkedIn", url: "#" },
+        ];
+
   useLayoutEffect(() => {
     if (!overlayRef.current) return;
 
@@ -30,30 +91,23 @@ export default function FullscreenMenu({ open, onClose }: Props) {
     });
   }, []);
 
-  // 2) se open diventa true, montiamo e animiamo apertura
   useEffect(() => {
     if (open) setShouldRender(true);
   }, [open]);
 
-  // 3) play open/close quando cambia open (ma solo se renderizzato)
   useEffect(() => {
-    if (!shouldRender) return;
-    if (!overlayRef.current) return;
+    if (!shouldRender || !overlayRef.current) return;
 
-    // kill timeline precedente
     tlRef.current?.kill();
     tlRef.current = null;
 
     const overlay = overlayRef.current;
-
     const left = leftRef.current;
     const right = rightRef.current;
     const bottom = bottomRef.current;
-
     const menuLis = overlay.querySelectorAll("li");
 
     if (open) {
-      // OPEN
       gsap.set(overlay, { pointerEvents: "auto" });
 
       const tl = gsap.timeline();
@@ -99,13 +153,16 @@ export default function FullscreenMenu({ open, onClose }: Props) {
           0.45
         );
     } else {
-      // CLOSE (con animazione, poi smontiamo)
       const tl = gsap.timeline({
         onComplete: () => {
-          gsap.set(overlay, { autoAlpha: 0, pointerEvents: "none" });
+          gsap.set(overlay, {
+            autoAlpha: 0,
+            pointerEvents: "none",
+          });
           setShouldRender(false);
         },
       });
+
       tlRef.current = tl;
 
       tl.to(overlay, {
@@ -126,55 +183,73 @@ export default function FullscreenMenu({ open, onClose }: Props) {
   return (
     <div ref={overlayRef} className={styles.overlay}>
       <div className={styles.container}>
-        {/* LEFT MENU */}
         <nav ref={leftRef} className={styles.left}>
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/chi-siamo">Chi siamo</a></li>
-            <li><a href="/portfolio">Portfolio</a></li>
-            <li><a href="/contatti">Contatti</a></li>
+            {menuLeft.map((item, i) => (
+              <li key={i}>
+                <Link href={item.link || "#"} onClick={onClose}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
-        {/* RIGHT MENU */}
         <div ref={rightRef} className={styles.right}>
-          <span className={styles.sectionTitle}>Comunicazione</span>
+          {menuRightTitleLink ? (
+            <Link
+              href={menuRightTitleLink}
+              className={styles.sectionTitle}
+              onClick={onClose}
+            >
+              {menuRightTitle}
+            </Link>
+          ) : (
+            <span className={styles.sectionTitle}>{menuRightTitle}</span>
+          )}
+
           <ul>
-            <li><a href="/comunicazione/branding">Branding</a></li>
-            <li><a href="/comunicazione/web-design">Web Design</a></li>
-            <li><a href="/comunicazione/social">Gestione Social</a></li>
-            <li><a href="/comunicazione/fotografia">Fotografia</a></li>
+            {menuRight.map((item, i) => (
+              <li key={i}>
+                <Link href={item.link || "#"} onClick={onClose}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
 
-      {/* BOTTOM INFO */}
       <div ref={bottomRef} className={styles.bottom}>
-        <div className={styles.address}>
-          Via Sanremo, 39 · 85100 Potenza (PZ)
-        </div>
+        <div className={styles.address}>{address}</div>
 
-        <div className={styles.bottomCenter}>
-          Startup · PMI · Brand culturali · Professionisti
-        </div>
+        <div className={styles.bottomCenter}>{bottomTags}</div>
 
         <div className={styles.socials}>
-          <a href="#" aria-label="Instagram">
-            <FaInstagram />
-            <span>Instagram</span>
-          </a>
-          <a href="#" aria-label="Facebook">
-            <FaFacebookF />
-            <span>Facebook</span>
-          </a>
-          <a href="#" aria-label="LinkedIn">
-            <FaLinkedinIn />
-            <span>LinkedIn</span>
-          </a>
+          {socials.map((s, i) => {
+            const Icon =
+              s.label?.toLowerCase() === "instagram"
+                ? FaInstagram
+                : s.label?.toLowerCase() === "facebook"
+                  ? FaFacebookF
+                  : FaLinkedinIn;
+
+            return (
+              <a
+                key={i}
+                href={s.url || "#"}
+                aria-label={s.label}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Icon />
+                <span>{s.label}</span>
+              </a>
+            );
+          })}
         </div>
       </div>
 
-      {/* CLICK AREA TO CLOSE */}
       <button
         aria-label="Chiudi menu"
         className={styles.closeArea}

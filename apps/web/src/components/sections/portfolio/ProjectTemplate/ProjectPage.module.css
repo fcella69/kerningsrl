@@ -1,0 +1,244 @@
+/* ======================================================
+   ROOT
+====================================================== */
+
+.project {
+  position: relative;
+  background-color: #000020;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+/* ======================================================
+   MOUSE GLOW
+====================================================== */
+
+.mouseGlow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 700px;
+  height: 700px;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(260px);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(40, 130, 255, 0.55) 0%,
+    rgba(40, 130, 255, 0.25) 40%,
+    rgba(255, 140, 40, 0.15) 65%,
+    transparent 75%
+  );
+}
+
+/* ======================================================
+   HERO (perfetta, lasciata invariata)
+====================================================== */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--container-padding);
+  z-index: 2;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: 920px;
+}
+
+.category {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 22px;
+}
+
+.title {
+  font-family: var(--font-title);
+  font-size: clamp(3.2rem, 7vw, 6.8rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+}
+
+/* ======================================================
+   CONTENT WRAPPER
+====================================================== */
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: clamp(120px, 14vh, 180px) var(--container-padding);
+}
+
+/* ======================================================
+   TEXT + COVER GRID
+====================================================== */
+
+.topSection {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: clamp(60px, 6vw, 120px);
+  align-items: center;
+  margin-bottom: clamp(140px, 16vh, 220px);
+}
+
+/* Description */
+
+.description {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  max-width: 560px;
+}
+
+/* ======================================================
+   COVER IMAGE
+====================================================== */
+
+.coverWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  cursor: pointer;
+  transition: transform 0.5s ease;
+}
+
+.coverWrapper:hover {
+  transform: translateY(-6px);
+}
+
+.coverImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 28px;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.coverWrapper:hover .coverImage {
+  transform: scale(1.05);
+}
+
+
+/* ======================================================
+   FULL WIDTH GALLERY
+====================================================== */
+
+.gallerySection {
+  position: relative;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-top: clamp(140px, 16vh, 220px);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.galleryItem {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.galleryItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.galleryItem:hover img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+
+@media (max-width: 1024px) {
+  .topSection {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  .description {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 2.6rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
+  }
+}
+
+/* ======================================================
+   LIGHTBOX
+====================================================== */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 20, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+}
+
+.lightboxInner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.lightboxImage {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  cursor: zoom-in;
+}
+
+.closeButton {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: white;
+  cursor: pointer;
+}

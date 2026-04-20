@@ -4,9 +4,18 @@ import { Inter } from "next/font/google";
 import "../app/globals.css";
 
 import Header from "@/components/layout/Header/Header";
+import Footer from "@/components/layout/Footer/Footer";
+import PageTransition from "@/components/layout/PageTransition/PageTransition";
 
+// SANITY
+import { sanityFetch } from "@/lib/sanity/fetch";
+import { footerQuery, headerQuery } from "@/lib/sanity/queries";
+import { getSiteUrl } from "@/lib/seo/buildSeoMetadata";
 
-// FONT CONFIG
+/* =========================
+   FONT CONFIG
+========================= */
+
 const monument = localFont({
   src: [
     {
@@ -29,24 +38,48 @@ const inter = Inter({
   variable: "--font-body",
 });
 
+/* =========================
+   METADATA BASE
+========================= */
 
-// METADATA BASE (poi la estendiamo)
 export const metadata: Metadata = {
-  title: "Kerning — Digital Studio",
+  metadataBase: new URL(getSiteUrl()),
+  title: {
+    default: "Kerning — Digital Studio",
+    template: "%s | Kerning",
+  },
   description:
     "Kerning è uno studio digitale specializzato in branding, web design e prodotti digitali ad alte prestazioni.",
+  openGraph: {
+    siteName: "Kerning",
+    locale: "it_IT",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
-export default function RootLayout({
+/* =========================
+   ROOT LAYOUT
+========================= */
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headerData = await sanityFetch<any>(headerQuery);
+  const footerData = await sanityFetch<any>(footerQuery);
+
   return (
     <html lang="it" className={`${monument.variable} ${inter.variable}`}>
       <body>
-        <Header />
-        {children}
+        <Header data={headerData} />
+
+        <PageTransition>{children}</PageTransition>
+
+        <Footer data={footerData} />
       </body>
     </html>
   );

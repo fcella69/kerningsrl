@@ -40,11 +40,12 @@
 .logo {
   display: flex;
   align-items: center;
+  filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.5));
 }
 
 /* MOBILE / BASE */
 .logo img {
-  height: auto;
+  height: 60px;
   max-height: 34px;
   width: auto;
   transition: transform 0.3s var(--ease-standard),
@@ -54,7 +55,8 @@
 /* DESKTOP */
 @media (min-width: 1024px) {
   .logo img {
-    max-height: 44px;
+    max-height: 60px;
+    height: 200px;
   }
 }
 

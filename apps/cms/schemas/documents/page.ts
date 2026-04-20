@@ -5,6 +5,11 @@ export default defineType({
   title: "Page",
   type: "document",
   fields: [
+    {
+      name: "seo",
+      title: "SEO",
+      type: "seo",
+    },
     defineField({
       name: "title",
       title: "Title",

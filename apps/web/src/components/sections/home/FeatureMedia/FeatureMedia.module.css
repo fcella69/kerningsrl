@@ -1,0 +1,70 @@
+.section {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 0 clamp(96px, 12vw, 144px);
+  background:
+    linear-gradient(180deg, #000020 0%, rgba(0, 0, 32, 0.98) 26%, #01011f 100%);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  min-height: clamp(420px, 78vh, 920px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(16, 74, 156, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(4, 4, 28, 0.98), rgba(0, 0, 20, 1));
+}
+
+.media,
+.placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+}
+
+.placeholder {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+    radial-gradient(circle at 20% 20%, rgba(16, 74, 156, 0.2), transparent 34%),
+    radial-gradient(circle at 80% 28%, rgba(238, 98, 36, 0.12), transparent 30%),
+    #05051c;
+}
+
+.placeholderInner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.placeholderLabel {
+  font-family: var(--font-title);
+  font-size: clamp(1.3rem, 4vw, 2.8rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(233, 235, 241, 0.72);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.26) 100%),
+    linear-gradient(180deg, rgba(0, 0, 32, 0) 70%, rgba(0, 0, 32, 0.65) 100%);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-bottom: 84px;
+  }
+
+  .frame {
+    min-height: 56vh;
+  }
+}

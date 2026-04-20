@@ -67,13 +67,13 @@
   pointer-events: none;
   z-index: 1;
   filter: blur(250px);
-  transform: translate(-50%, -50%);
+  transform: translate(50%, -50%);
   background: radial-gradient(
     circle,
-    rgba(255, 120, 2, 0.722) 0%,
-    rgba(255, 140, 40, 0.35) 25%,
-    rgba(255, 140, 40, 0.18) 45%,
-    rgba(255, 140, 40, 0.08) 60%,
+    rgba(2, 129, 255, 0.650) 0%,
+    rgba(40, 119, 255, 0.35) 50%,
+    rgba(255, 140, 40, 0.18) 75%,
+    rgba(255, 140, 40, 0.08) 90%,
     transparent 75%
   );
 }
@@ -98,7 +98,7 @@
   text-transform: none;
   letter-spacing: 0.035em;
   line-height: 0.9;
-  font-size: clamp(2.6rem, 8.5vw, 8.8rem);
+  font-size: clamp(2rem, 8.5vw, 6rem);
 }
 
 .word {

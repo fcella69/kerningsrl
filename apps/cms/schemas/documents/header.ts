@@ -1,6 +1,6 @@
 export default {
   name: "header",
-  title: "Header & Menu",
+  title: "Header",
   type: "document",
   fields: [
     {
@@ -12,37 +12,77 @@ export default {
 
     {
       name: "menuLeft",
-      title: "Menu principale (sinistra)",
+      title: "Menu sinistro",
       type: "array",
       of: [
         {
           type: "object",
           fields: [
-            { name: "label", title: "Testo", type: "string" },
-            { name: "link", title: "Link", type: "string" },
+            {
+              name: "label",
+              title: "Label",
+              type: "string",
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "link",
+              title: "Link",
+              type: "string",
+              validation: (Rule: any) => Rule.required(),
+            },
           ],
+          preview: {
+            select: {
+              title: "label",
+              subtitle: "link",
+            },
+          },
         },
       ],
     },
 
     {
       name: "menuRightTitle",
-      title: "Titolo menu destro",
+      title: "Titolo lato destro",
       type: "string",
-      initialValue: "Comunicazione",
+      initialValue: "Soluzioni Digitali",
+    },
+    {
+      name: "menuRightTitleLink",
+      title: "Link titolo lato destro",
+      type: "string",
+      description:
+        "Se compilato, il titolo lato destro del fullscreen menu diventa cliccabile mantenendo lo stesso aspetto.",
+      initialValue: "/soluzioni-digitali",
     },
 
     {
       name: "menuRight",
-      title: "Menu servizi (destra)",
+      title: "Menu destro",
       type: "array",
       of: [
         {
           type: "object",
           fields: [
-            { name: "label", title: "Testo", type: "string" },
-            { name: "link", title: "Link", type: "string" },
+            {
+              name: "label",
+              title: "Label",
+              type: "string",
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "link",
+              title: "Link",
+              type: "string",
+              validation: (Rule: any) => Rule.required(),
+            },
           ],
+          preview: {
+            select: {
+              title: "label",
+              subtitle: "link",
+            },
+          },
         },
       ],
     },
@@ -51,13 +91,14 @@ export default {
       name: "address",
       title: "Indirizzo",
       type: "string",
+      initialValue: "Via Sanremo, 39 · 85100 Potenza (PZ)",
     },
 
     {
       name: "bottomTags",
-      title: "Testo descrittivo bottom",
+      title: "Testo centrale footer menu",
       type: "string",
-      description: "Es: Startup · PMI · Brand culturali · Professionisti",
+      initialValue: "Startup · PMI · Brand culturali · Professionisti",
     },
 
     {
@@ -68,9 +109,25 @@ export default {
         {
           type: "object",
           fields: [
-            { name: "label", title: "Nome", type: "string" },
-            { name: "url", title: "URL", type: "string" },
+            {
+              name: "label",
+              title: "Nome social",
+              type: "string",
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "url",
+              title: "URL",
+              type: "url",
+              validation: (Rule: any) => Rule.required(),
+            },
           ],
+          preview: {
+            select: {
+              title: "label",
+              subtitle: "url",
+            },
+          },
         },
       ],
     },

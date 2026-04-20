@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 90; /* sotto l'header */
+  z-index: 90;
   backdrop-filter: blur(18px);
   background: rgba(0, 0, 32, 0.82);
   display: flex;
@@ -12,7 +12,6 @@
   justify-content: center;
 }
 
-/* area clic invisibile per chiudere */
 .closeArea {
   position: absolute;
   inset: 0;
@@ -21,24 +20,16 @@
   cursor: pointer;
 }
 
-/* =========================
-   CONTAINER
-========================= */
-
 .container {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1300px;
   padding: clamp(40px, 8vw, 80px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(40px, 10vw, 120px);
 }
-
-/* =========================
-   DESKTOP DIVIDER
-========================= */
 
 .container::after {
   content: "";
@@ -61,28 +52,22 @@
   }
 }
 
-
-
-/* =========================
-   LEFT
-========================= */
-
 .left ul {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
+
 @media (max-width: 768px) {
   .left ul {
-    gap: 14px;
+    gap: 12px;
   }
 }
 
-
 .left a {
-  font-family: var(--font-title); /* Monument */
-  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 4.5vw, 3rem);
   letter-spacing: 0.04em;
   color: #fff;
   opacity: 0.9;
@@ -94,10 +79,6 @@
   transform: translateX(6px);
 }
 
-/* =========================
-   RIGHT
-========================= */
-
 .right {
   display: flex;
   flex-direction: column;
@@ -105,11 +86,21 @@
 }
 
 .sectionTitle {
+  display: inline-flex;
+  width: fit-content;
   font-family: var(--font-title);
   font-size: 1rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-primary);
+  opacity: 1;
+  text-decoration: none;
+}
+
+.sectionTitle:hover {
+  color: var(--color-primary);
+  opacity: 1;
+  transform: none;
 }
 
 .right ul {
@@ -125,44 +116,34 @@
   }
 }
 
-
-.right a {
+.right ul a {
   font-family: var(--font-title);
-  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
   letter-spacing: 0.04em;
   color: #fff;
   opacity: 0.75;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.right a:hover {
+.right ul a:hover {
   opacity: 1;
   transform: translateX(4px);
 }
 
-/* =========================
-   MOBILE
-========================= */
-
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
-    gap: 48px;
-  }
-  .left a {
-    font-size: 2.1rem;
+    gap: 40px;
   }
 
-  .right a {
-    font-size: 1.3rem;
+  .left a {
+    font-size: 1.8rem;
+  }
+
+  .right ul a {
+    font-size: 1rem;
   }
 }
-
-
-
-/* =========================
-   BOTTOM INFO
-========================= */
 
 .bottom {
   position: absolute;
@@ -176,7 +157,6 @@
   gap: 20px;
 }
 
-/* ADDRESS */
 .address {
   font-size: 0.75rem;
   letter-spacing: 0.08em;
@@ -184,7 +164,6 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* CENTER TEXT */
 .bottomCenter {
   font-size: 0.75rem;
   letter-spacing: 0.14em;
@@ -193,7 +172,6 @@
   text-align: center;
 }
 
-/* SOCIALS */
 .socials {
   display: flex;
   justify-content: flex-end;
@@ -219,9 +197,6 @@
   font-size: 0.85rem;
 }
 
-/* =========================
-   MOBILE
-========================= */
 @media (max-width: 768px) {
   .bottom {
     display: none;
