@@ -14,6 +14,17 @@ type ProjectPageProps = {
   }>;
 };
 
+type ProjectData = {
+  title: string;
+  category?: string;
+  slug: string;
+  coverImageUrl?: string;
+  description?: string;
+  gallery?: {
+    url?: string;
+  }[];
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -38,7 +49,9 @@ export async function generateMetadata({
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
 
-  const project = await sanityFetch(projectBySlugQuery, { slug });
+  const project = await sanityFetch<ProjectData | null>(projectBySlugQuery, {
+    slug,
+  });
 
   if (!project) {
     return null;
