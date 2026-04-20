@@ -15,7 +15,7 @@ type ProjectPageProps = {
   }>;
 };
 
-type ProjectData = {
+type RawProjectData = {
   title: string;
   category?: string;
   slug: string;
@@ -23,6 +23,17 @@ type ProjectData = {
   description?: PortableTextBlock[];
   gallery?: {
     url?: string;
+  }[];
+};
+
+type ProjectData = {
+  title: string;
+  category?: string;
+  slug: string;
+  coverImageUrl?: string;
+  description?: PortableTextBlock[];
+  gallery?: {
+    url: string;
   }[];
 };
 
@@ -50,7 +61,7 @@ export async function generateMetadata({
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
 
-  const project = await sanityFetch<ProjectData | null>(projectBySlugQuery, {
+  const project = await sanityFetch<RawProjectData | null>(projectBySlugQuery, {
     slug,
   });
 
@@ -58,5 +69,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     return null;
   }
 
-  return <ProjectTemplate project={project} />;
+  const normalizedProject: ProjectData = {
+    ...project,
+    gallery:
+      project.gallery?.filter(
+        (item): item is { url: string } => typeof item?.url === "string" && item.url.length > 0
+      ) ?? [],
+  };
+
+  return <ProjectTemplate project={normalizedProject} />;
 }
