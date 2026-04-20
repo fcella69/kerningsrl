@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { PortableTextBlock } from "@portabletext/types";
 
 import ProjectTemplate from "@/components/sections/portfolio/ProjectTemplate/ProjectTemplate";
 import { sanityFetch } from "@/lib/sanity/fetch";
@@ -19,7 +20,7 @@ type ProjectData = {
   category?: string;
   slug: string;
   coverImageUrl?: string;
-  description?: string;
+  description?: PortableTextBlock[];
   gallery?: {
     url?: string;
   }[];
