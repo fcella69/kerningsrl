@@ -18,6 +18,9 @@ import customProjectsPage from './documents/customProjectsPage'
 import digitalSolutionsPage from './documents/digitalSolutionsPage'
 import footer from './documents/footer'
 import seo from './objects/seo'
+import privacyPolicyPage from './documents/privacyPolicyPage'
+import cookiePolicyPage from './documents/cookiePolicyPage'
+import termsConditionsPage from './documents/termsConditionsPage'
 
 export const schemaTypes = [
   settings,
@@ -37,6 +40,10 @@ export const schemaTypes = [
   socialAdvertisingPage,
   brandIdentityPage,
   customProjectsPage,
+
+  privacyPolicyPage,
+  cookiePolicyPage,
+  termsConditionsPage,
 
   aboutPillar,
   aboutReason,

@@ -39,7 +39,7 @@ export default defineType({
         hotspot: true,
       },
       description:
-        "Icona del sito usata come favicon. Consigliato PNG quadrato, ad esempio 96x96 o 192x192.",
+        "Icona del sito usata come favicon. Consigliato PNG quadrato.",
     }),
 
     defineField({
@@ -47,6 +47,14 @@ export default defineType({
       title: "Favicon Alt",
       type: "string",
       initialValue: "Kerning favicon",
+    }),
+
+    defineField({
+      name: "cookiebotId",
+      title: "Cookiebot ID",
+      type: "string",
+      description:
+        "Inserisci il Cookiebot CBID. Verrà usato per il banner globale e per la Cookie Policy.",
     }),
   ],
 });

@@ -16,7 +16,8 @@ export const settingsQuery = groq`
     seoTitle,
     seoDescription,
     "faviconUrl": favicon.asset->url,
-    faviconAlt
+    faviconAlt,
+    cookiebotId
   }
 `;
 
@@ -852,5 +853,56 @@ export const GENERIC_PAGE_SEO_QUERY = groq`
     ${SEO_FIELDS},
     title,
     "slug": slug.current
+  }
+`;
+
+export const PRIVACY_POLICY_PAGE_QUERY = groq`
+  *[_type == "privacyPolicyPage"][0]{
+    ${SEO_FIELDS},
+    heroEyebrow,
+    title,
+    introText,
+    content
+  }
+`;
+
+export const PRIVACY_POLICY_PAGE_SEO_QUERY = groq`
+  *[_type == "privacyPolicyPage"][0]{
+    ${SEO_FIELDS}
+  }
+`;
+
+export const COOKIE_POLICY_PAGE_QUERY = groq`
+  *[_type == "cookiePolicyPage"][0]{
+    ${SEO_FIELDS},
+    heroEyebrow,
+    title,
+    introText,
+    content,
+    declarationTitle,
+    declarationText,
+    declarationScript
+  }
+`;
+
+export const COOKIE_POLICY_PAGE_SEO_QUERY = groq`
+  *[_type == "cookiePolicyPage"][0]{
+    ${SEO_FIELDS}
+  }
+`;
+
+export const TERMS_CONDITIONS_PAGE_QUERY = groq`
+  *[_type == "termsConditionsPage"][0]{
+    ${SEO_FIELDS},
+    heroEyebrow,
+    title,
+    introText,
+    content
+  }
+`;
+
+export const TERMS_CONDITIONS_PAGE_SEO_QUERY = groq`
+  *[_type == "termsConditionsPage"][0]{
+    ${SEO_FIELDS}
   }
 `;

@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "../app/globals.css";
 
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
 import PageTransition from "@/components/layout/PageTransition/PageTransition";
+import PerformanceMode from "@/components/ui/PerformanceMode/PerformanceMode";
 
 // SANITY
 import { sanityFetch } from "@/lib/sanity/fetch";
-import { footerQuery, headerQuery, settingsQuery } from "@/lib/sanity/queries";
+import {
+  footerQuery,
+  headerQuery,
+  settingsQuery,
+} from "@/lib/sanity/queries";
 import { getSiteUrl } from "@/lib/seo/buildSeoMetadata";
-
-import PerformanceMode from "@/components/ui/PerformanceMode/PerformanceMode";
 
 /* =========================
    FONT CONFIG
@@ -47,6 +51,7 @@ type SettingsData = {
   seoDescription?: string;
   faviconUrl?: string;
   faviconAlt?: string;
+  cookiebotId?: string;
 };
 
 /* =========================
@@ -101,13 +106,29 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const headerData = await sanityFetch<any>(headerQuery);
-  const footerData = await sanityFetch<any>(footerQuery);
+  const [headerData, footerData, settings] = await Promise.all([
+    sanityFetch<any>(headerQuery),
+    sanityFetch<any>(footerQuery),
+    sanityFetch<SettingsData | null>(settingsQuery),
+  ]);
+
+  const cookiebotId = settings?.cookiebotId?.trim();
 
   return (
     <html lang="it" className={`${monument.variable} ${inter.variable}`}>
       <body>
         <PerformanceMode />
+
+        {cookiebotId ? (
+          <Script
+            id="Cookiebot"
+            src="https://consent.cookiebot.com/uc.js"
+            data-cbid={cookiebotId}
+            data-blockingmode="auto"
+            strategy="beforeInteractive"
+          />
+        ) : null}
+
         <Header data={headerData} />
 
         <PageTransition>{children}</PageTransition>
