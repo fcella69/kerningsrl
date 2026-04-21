@@ -11,21 +11,42 @@ export default defineType({
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: "siteUrl",
       title: "Site URL",
       type: "url",
     }),
+
     defineField({
       name: "seoTitle",
       title: "Default SEO Title",
       type: "string",
     }),
+
     defineField({
       name: "seoDescription",
       title: "Default SEO Description",
       type: "text",
       rows: 3,
+    }),
+
+    defineField({
+      name: "favicon",
+      title: "Favicon",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
+      description:
+        "Icona del sito usata come favicon. Consigliato PNG quadrato, ad esempio 96x96 o 192x192.",
+    }),
+
+    defineField({
+      name: "faviconAlt",
+      title: "Favicon Alt",
+      type: "string",
+      initialValue: "Kerning favicon",
     }),
   ],
 });

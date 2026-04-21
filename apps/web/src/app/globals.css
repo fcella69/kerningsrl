@@ -298,3 +298,35 @@ body {
     cursor: text;
   }
 }
+
+
+/* =========================
+   PERFORMANCE MODE
+========================= */
+
+body.performance-mode .noise {
+  display: none !important;
+}
+
+body.performance-mode .mouseGlow {
+  display: none !important;
+}
+
+body.performance-mode .blob {
+  filter: blur(42px) !important;
+  opacity: 0.22 !important;
+}
+
+body.performance-mode * {
+  scroll-behavior: auto;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .noise {
+    display: none !important;
+  }
+
+  .mouseGlow {
+    display: none !important;
+  }
+}

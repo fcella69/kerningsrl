@@ -9,8 +9,10 @@ import PageTransition from "@/components/layout/PageTransition/PageTransition";
 
 // SANITY
 import { sanityFetch } from "@/lib/sanity/fetch";
-import { footerQuery, headerQuery } from "@/lib/sanity/queries";
+import { footerQuery, headerQuery, settingsQuery } from "@/lib/sanity/queries";
 import { getSiteUrl } from "@/lib/seo/buildSeoMetadata";
+
+import PerformanceMode from "@/components/ui/PerformanceMode/PerformanceMode";
 
 /* =========================
    FONT CONFIG
@@ -38,27 +40,57 @@ const inter = Inter({
   variable: "--font-body",
 });
 
+type SettingsData = {
+  siteName?: string;
+  siteUrl?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  faviconUrl?: string;
+  faviconAlt?: string;
+};
+
 /* =========================
    METADATA BASE
 ========================= */
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getSiteUrl()),
-  title: {
-    default: "Kerning — Digital Studio",
-    template: "%s | Kerning",
-  },
-  description:
-    "Kerning è uno studio digitale specializzato in branding, web design e prodotti digitali ad alte prestazioni.",
-  openGraph: {
-    siteName: "Kerning",
-    locale: "it_IT",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await sanityFetch<SettingsData | null>(settingsQuery);
+
+  const siteName = settings?.siteName?.trim() || "Kerning";
+  const defaultTitle = settings?.seoTitle?.trim() || "Kerning — Digital Studio";
+  const defaultDescription =
+    settings?.seoDescription?.trim() ||
+    "Kerning è uno studio digitale specializzato in branding, web design e prodotti digitali ad alte prestazioni.";
+
+  return {
+    metadataBase: new URL(settings?.siteUrl || getSiteUrl()),
+    title: {
+      default: defaultTitle,
+      template: `%s | ${siteName}`,
+    },
+    description: defaultDescription,
+    icons: settings?.faviconUrl
+      ? {
+          icon: [
+            {
+              url: settings.faviconUrl,
+              type: "image/png",
+            },
+          ],
+          shortcut: [settings.faviconUrl],
+          apple: [settings.faviconUrl],
+        }
+      : undefined,
+    openGraph: {
+      siteName,
+      locale: "it_IT",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+    },
+  };
+}
 
 /* =========================
    ROOT LAYOUT
@@ -75,6 +107,7 @@ export default async function RootLayout({
   return (
     <html lang="it" className={`${monument.variable} ${inter.variable}`}>
       <body>
+        <PerformanceMode />
         <Header data={headerData} />
 
         <PageTransition>{children}</PageTransition>

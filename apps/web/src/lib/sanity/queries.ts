@@ -9,6 +9,17 @@ const SEO_FIELDS = `
   "seoOgImageAlt": seo.ogImageAlt
 `;
 
+export const settingsQuery = groq`
+  *[_type == "settings"][0]{
+    siteName,
+    siteUrl,
+    seoTitle,
+    seoDescription,
+    "faviconUrl": favicon.asset->url,
+    faviconAlt
+  }
+`;
+
 export const headerQuery = groq`
   *[_type == "header"][0]{
     logo,
@@ -243,8 +254,13 @@ export const portfolioQuery = groq`
 export const portfolioPageQuery = groq`
   *[_type == "portfolioPage"][0]{
     ${SEO_FIELDS},
+    heroEyebrow,
     title,
     subtitle,
+    sectionEyebrow,
+    sectionTitle,
+    projectsCountSuffix,
+    emptyStateText,
     "featuredIds": featuredProjects[]._ref
   }
 `;

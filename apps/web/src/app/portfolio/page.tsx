@@ -17,6 +17,17 @@ type Project = {
   imageUrl?: string;
 };
 
+type PortfolioPageData = {
+  heroEyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  sectionEyebrow?: string;
+  sectionTitle?: string;
+  projectsCountSuffix?: string;
+  emptyStateText?: string;
+  featuredIds?: string[];
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await sanityFetch<any>(PORTFOLIO_PAGE_SEO_QUERY);
 
@@ -31,11 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PortfolioPage() {
-  const page = await sanityFetch<{
-    title?: string;
-    subtitle?: string;
-    featuredIds?: string[];
-  }>(portfolioPageQuery);
+  const page = await sanityFetch<PortfolioPageData>(portfolioPageQuery);
 
   const hasCustomOrder = (page?.featuredIds?.length ?? 0) > 0;
 
@@ -49,11 +56,19 @@ export default async function PortfolioPage() {
 
   return (
     <PortfolioGrid
+      heroEyebrow={page?.heroEyebrow ?? "Portfolio"}
       title={page?.title ?? "Portfolio"}
       subtitle={
         page?.subtitle ??
         "Una selezione di progetti che raccontano il nostro approccio."
       }
+      sectionEyebrow={page?.sectionEyebrow ?? "Selected Work"}
+      sectionTitle={
+        page?.sectionTitle ??
+        "Progetti costruiti con identità, struttura e attenzione al dettaglio."
+      }
+      projectsCountSuffix={page?.projectsCountSuffix ?? "progetti"}
+      emptyStateText={page?.emptyStateText ?? "Portfolio in caricamento…"}
       projects={projects}
     />
   );
