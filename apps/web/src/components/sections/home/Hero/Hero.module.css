@@ -97,8 +97,8 @@
   font-weight: 800;
   text-transform: none;
   letter-spacing: 0.035em;
-  line-height: 0.9;
-  font-size: clamp(2rem, 8.5vw, 6rem);
+  line-height: 1.09;
+  font-size: clamp(2rem, 8.5vw, 5rem);
 }
 
 .word {

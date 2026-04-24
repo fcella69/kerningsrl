@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -74,10 +75,12 @@ function NavCard({
     <Link href={`/portfolio/${project.slug}`} className={styles.navCard}>
       <div className={styles.navCardMedia}>
         {project.imageUrl ? (
-          <img
+          <Image
             src={project.imageUrl}
             alt={project.title}
+            fill
             className={styles.navCardImage}
+            sizes="(max-width: 900px) 100vw, 220px"
           />
         ) : (
           <div className={styles.navCardPlaceholder} />
@@ -111,7 +114,7 @@ export default function ProjectTemplate({
   const glowRef = useRef<HTMLDivElement>(null);
   const heroMediaSectionRef = useRef<HTMLElement>(null);
   const heroMediaShellRef = useRef<HTMLDivElement>(null);
-  const heroMediaImageRef = useRef<HTMLImageElement>(null);
+  const heroMediaVisualRef = useRef<HTMLDivElement>(null);
 
   const services = project.services?.filter(Boolean) ?? [];
 
@@ -136,9 +139,9 @@ export default function ProjectTemplate({
   useLayoutEffect(() => {
     const section = heroMediaSectionRef.current;
     const shell = heroMediaShellRef.current;
-    const image = heroMediaImageRef.current;
+    const visual = heroMediaVisualRef.current;
 
-    if (!section || !shell || !image) return;
+    if (!section || !shell || !visual) return;
 
     const mm = gsap.matchMedia();
 
@@ -148,7 +151,7 @@ export default function ProjectTemplate({
         transformOrigin: "center center",
       });
 
-      gsap.set(image, {
+      gsap.set(visual, {
         scale: 1.08,
         transformOrigin: "center center",
       });
@@ -170,7 +173,7 @@ export default function ProjectTemplate({
         },
         0
       ).to(
-        image,
+        visual,
         {
           scale: 1,
           ease: "none",
@@ -190,7 +193,7 @@ export default function ProjectTemplate({
         transformOrigin: "center center",
       });
 
-      gsap.set(image, {
+      gsap.set(visual, {
         scale: 1.04,
         transformOrigin: "center center",
       });
@@ -212,7 +215,7 @@ export default function ProjectTemplate({
         },
         0
       ).to(
-        image,
+        visual,
         {
           scale: 1,
           ease: "none",
@@ -234,6 +237,12 @@ export default function ProjectTemplate({
   useEffect(() => {
     const glow = glowRef.current;
     if (!glow) return;
+
+    const isTouch =
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+    if (isTouch) return;
 
     const moveX = gsap.quickTo(glow, "x", {
       duration: 0.35,
@@ -282,12 +291,17 @@ export default function ProjectTemplate({
           data-animate
         >
           <div ref={heroMediaShellRef} className={styles.heroMediaShell}>
-            <img
-              ref={heroMediaImageRef}
-              src={project.coverImageUrl}
-              alt={project.coverImageAlt || project.title}
-              className={styles.heroMediaImage}
-            />
+            <div ref={heroMediaVisualRef}>
+              <Image
+                src={project.coverImageUrl}
+                alt={project.coverImageAlt || project.title}
+                width={1800}
+                height={1200}
+                className={styles.heroMediaImage}
+                sizes="100vw"
+                priority
+              />
+            </div>
           </div>
         </section>
       ) : null}
@@ -342,10 +356,13 @@ export default function ProjectTemplate({
 
       {project.galleryTopWideImageUrl ? (
         <section className={styles.fullBleedBlock}>
-          <img
+          <Image
             src={project.galleryTopWideImageUrl}
             alt={project.galleryTopWideImageAlt || project.title}
+            width={1800}
+            height={1100}
             className={styles.fullBleedImage}
+            sizes="100vw"
           />
         </section>
       ) : null}
@@ -354,20 +371,26 @@ export default function ProjectTemplate({
         <section className={styles.pairBleedBlock}>
           <div className={styles.pairBleedItem}>
             {project.galleryPairLeftImageUrl ? (
-              <img
+              <Image
                 src={project.galleryPairLeftImageUrl}
                 alt={project.galleryPairLeftImageAlt || project.title}
+                width={1200}
+                height={900}
                 className={styles.pairBleedImage}
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             ) : null}
           </div>
 
           <div className={styles.pairBleedItem}>
             {project.galleryPairRightImageUrl ? (
-              <img
+              <Image
                 src={project.galleryPairRightImageUrl}
                 alt={project.galleryPairRightImageAlt || project.title}
+                width={1200}
+                height={900}
                 className={styles.pairBleedImage}
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             ) : null}
           </div>
@@ -376,20 +399,26 @@ export default function ProjectTemplate({
 
       {project.galleryBottomWideImageUrl ? (
         <section className={styles.fullBleedBlock}>
-          <img
+          <Image
             src={project.galleryBottomWideImageUrl}
             alt={project.galleryBottomWideImageAlt || project.title}
+            width={1800}
+            height={1100}
             className={styles.fullBleedImage}
+            sizes="100vw"
           />
         </section>
       ) : null}
 
       {project.galleryFinalWideImageUrl ? (
         <section className={styles.fullBleedBlock}>
-          <img
+          <Image
             src={project.galleryFinalWideImageUrl}
             alt={project.galleryFinalWideImageAlt || project.title}
+            width={1800}
+            height={1100}
             className={styles.fullBleedImage}
+            sizes="100vw"
           />
         </section>
       ) : null}
