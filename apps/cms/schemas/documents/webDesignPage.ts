@@ -181,23 +181,55 @@ export default defineType({
             ],
         }),
 
-        {
+        defineField({
             name: "featureImage",
-            title: "Break image",
+            title: "Break image desktop",
             type: "image",
             options: {
                 hotspot: true,
             },
-        },
-        {
+            fields: [
+                defineField({
+                    name: "alt",
+                    title: "Alt text",
+                    type: "string",
+                }),
+            ],
+        }),
+        defineField({
             name: "featureVideo",
-            title: "Break video",
-            description: "Se è presente il video, avrà priorità sull'immagine",
+            title: "Break video desktop",
+            description: "Se è presente il video desktop, avrà priorità sull'immagine desktop.",
             type: "file",
             options: {
                 accept: "video/mp4,video/webm",
             },
-        },
+        }),
+        defineField({
+            name: "featureImageMobile",
+            title: "Break image mobile",
+            type: "image",
+            options: {
+                hotspot: true,
+            },
+            fields: [
+                defineField({
+                    name: "alt",
+                    title: "Alt text mobile",
+                    type: "string",
+                }),
+            ],
+        }),
+        defineField({
+            name: "featureVideoMobile",
+            title: "Break video mobile",
+            description:
+                "Versione mobile/verticale. Su mobile ha priorità sull'immagine mobile e sulla media desktop.",
+            type: "file",
+            options: {
+                accept: "video/mp4,video/webm",
+            },
+        }),
 
         defineField({
             name: "pillarsTitle",

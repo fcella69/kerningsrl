@@ -1,77 +1,114 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   HiOutlineArrowLeft,
   HiOutlineArrowRight,
 } from "react-icons/hi";
-
-import type {
-  HomePortfolioPreviewData,
-  HomePortfolioProject,
-} from "../types";
 import styles from "./PortfolioCarousel.module.css";
 
-type PortfolioCarouselProps = {
-  data?: HomePortfolioPreviewData;
+type PortfolioProject = {
+  title?: string;
+  category?: string;
+  slug?: string;
+  imageUrl?: string;
 };
 
-const FALLBACK_PROJECTS: HomePortfolioProject[] = [
-  {
-    title: "Project preview",
-    category: "Digital",
-    imageUrl: "",
-    slug: "",
-  },
-  {
-    title: "Project preview",
-    category: "Brand",
-    imageUrl: "",
-    slug: "",
-  },
-  {
-    title: "Project preview",
-    category: "Web Design",
-    imageUrl: "",
-    slug: "",
-  },
-];
+type PortfolioPreviewData = {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  featuredProjects?: PortfolioProject[];
+  legacyProjects?: PortfolioProject[];
+};
+
+type PortfolioCarouselProps = {
+  data?: PortfolioPreviewData;
+};
 
 export default function PortfolioCarousel({
   data,
 }: PortfolioCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  const featuredProjects = data?.featuredProjects?.filter(Boolean) ?? [];
-  const legacyProjects = data?.legacyProjects?.filter(Boolean) ?? [];
-  const projects =
-    featuredProjects.length > 0
-      ? featuredProjects
-      : legacyProjects.length > 0
-        ? legacyProjects
-        : FALLBACK_PROJECTS;
-
-  const eyebrow = data?.eyebrow?.trim() || "Portfolio";
+  const eyebrow = data?.eyebrow?.trim() || "Selected Work";
   const title =
     data?.title?.trim() ||
-    "Progetti che prendono forma con metodo, visione e precisione.";
+    "Una selezione di progetti costruiti con metodo, identità e attenzione al dettaglio.";
   const description =
     data?.description?.trim() ||
-    "Una selezione di lavori che racconta il nostro modo di tradurre identità, obiettivi e performance in esperienze digitali concrete.";
-  const ctaLabel = data?.ctaLabel?.trim() || "Vedi tutti i progetti";
+    "Lavori sviluppati per dare presenza, chiarezza e qualità reale all’esperienza digitale del brand.";
+  const ctaLabel = data?.ctaLabel?.trim() || "Tutti i progetti";
   const ctaHref = data?.ctaHref?.trim() || "/portfolio";
 
-  const scrollByAmount = (direction: "prev" | "next") => {
+  const projects = useMemo(() => {
+    const featured =
+      data?.featuredProjects?.filter(
+        (item) => item?.title && item?.slug
+      ) ?? [];
+
+    if (featured.length) return featured;
+
+    return (
+      data?.legacyProjects?.filter((item) => item?.title && item?.slug) ?? []
+    );
+  }, [data?.featuredProjects, data?.legacyProjects]);
+
+  const getClosestIndex = () => {
     const container = trackRef.current;
-    if (!container) return;
+    if (!container || !cardRefs.current.length) return 0;
 
-    const amount = Math.max(container.clientWidth * 0.72, 300);
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
 
-    container.scrollBy({
-      left: direction === "next" ? amount : -amount,
+    let closestIndex = 0;
+    let minDistance = Number.POSITIVE_INFINITY;
+
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return;
+
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      const distance = Math.abs(cardCenter - containerCenter);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    return closestIndex;
+  };
+
+  const scrollToIndex = (index: number) => {
+    const container = trackRef.current;
+    const card = cardRefs.current[index];
+
+    if (!container || !card) return;
+
+    const targetLeft =
+      card.offsetLeft - (container.clientWidth - card.clientWidth) / 2;
+
+    container.scrollTo({
+      left: targetLeft,
       behavior: "smooth",
     });
+  };
+
+  const handleNavigate = (direction: "prev" | "next") => {
+    if (!projects.length) return;
+
+    const currentIndex = getClosestIndex();
+    const delta = direction === "next" ? 1 : -1;
+    const nextIndex = Math.max(
+      0,
+      Math.min(projects.length - 1, currentIndex + delta)
+    );
+
+    scrollToIndex(nextIndex);
   };
 
   return (
@@ -80,14 +117,16 @@ export default function PortfolioCarousel({
         <div className={styles.headerCopy}>
           <span className={styles.eyebrow}>{eyebrow}</span>
           <h2 className={styles.title}>{title}</h2>
-          <p className={styles.description}>{description}</p>
+          {description ? (
+            <p className={styles.description}>{description}</p>
+          ) : null}
         </div>
 
-        <div className={styles.controls}>
+        <div className={styles.headerControls}>
           <button
             type="button"
             className={styles.navButton}
-            onClick={() => scrollByAmount("prev")}
+            onClick={() => handleNavigate("prev")}
             aria-label="Progetto precedente"
           >
             <HiOutlineArrowLeft />
@@ -96,7 +135,7 @@ export default function PortfolioCarousel({
           <button
             type="button"
             className={styles.navButton}
-            onClick={() => scrollByAmount("next")}
+            onClick={() => handleNavigate("next")}
             aria-label="Progetto successivo"
           >
             <HiOutlineArrowRight />
@@ -104,53 +143,82 @@ export default function PortfolioCarousel({
         </div>
       </div>
 
-      <div
-        ref={trackRef}
-        className={styles.track}
-        aria-label="Portfolio carousel"
-      >
-        {projects.map((project, index) => {
-          const href = project.slug ? `/portfolio/${project.slug}` : ctaHref;
-          const titleText = project.title?.trim() || "Project preview";
-          const categoryText = project.category?.trim() || "Kerning";
+      <div className={styles.carouselViewport}>
+        <div className={styles.overlayControls} aria-hidden="true">
+          <button
+            type="button"
+            className={styles.navButton}
+            onClick={() => handleNavigate("prev")}
+            aria-label="Progetto precedente"
+          >
+            <HiOutlineArrowLeft />
+          </button>
 
-          return (
-            <article
-              key={`${project.slug || titleText}-${index}`}
-              className={styles.card}
-            >
-              <Link href={href} className={styles.cardLink}>
-                <div className={styles.mediaWrap}>
-                  {project.imageUrl ? (
-                    <img
-                      src={project.imageUrl}
-                      alt={titleText}
-                      className={styles.image}
-                    />
-                  ) : (
-                    <div className={styles.imagePlaceholder}>
-                      <span>Kerning Project</span>
-                    </div>
-                  )}
+          <button
+            type="button"
+            className={styles.navButton}
+            onClick={() => handleNavigate("next")}
+            aria-label="Progetto successivo"
+          >
+            <HiOutlineArrowRight />
+          </button>
+        </div>
 
-                  <div className={styles.mediaOverlay} />
-                </div>
+        <div ref={trackRef} className={styles.track}>
+          {projects.map((project, index) => {
+            const slug = project.slug?.trim();
+            const titleText = project.title?.trim() || "Project";
+            const categoryText = project.category?.trim();
 
-                <div className={styles.meta}>
-                  <div className={styles.metaCopy}>
-                    <span className={styles.category}>{categoryText}</span>
-                    <h3 className={styles.projectTitle}>{titleText}</h3>
+            return (
+              <div
+                key={`${slug}-${index}`}
+                ref={(element) => {
+                  cardRefs.current[index] = element;
+                }}
+                className={styles.card}
+              >
+                <Link
+                  href={slug ? `/portfolio/${slug}` : "#"}
+                  className={styles.cardLink}
+                >
+                  <div className={styles.mediaWrap}>
+                    {project.imageUrl ? (
+                      <Image
+                        src={project.imageUrl}
+                        alt={titleText}
+                        fill
+                        className={styles.image}
+                        sizes="(max-width: 640px) 86vw, (max-width: 1200px) 66vw, 750px"
+                      />
+                    ) : (
+                      <div className={styles.imagePlaceholder}>
+                        <span>{titleText}</span>
+                      </div>
+                    )}
+
+                    <span className={styles.mediaOverlay} />
                   </div>
 
-                  <span className={styles.cardCta}>
-                    <span>Scopri di più</span>
-                    <HiOutlineArrowRight className={styles.cardCtaIcon} />
-                  </span>
-                </div>
-              </Link>
-            </article>
-          );
-        })}
+                  <div className={styles.meta}>
+                    <div className={styles.metaCopy}>
+                      {categoryText ? (
+                        <span className={styles.category}>{categoryText}</span>
+                      ) : null}
+
+                      <h3 className={styles.projectTitle}>{titleText}</h3>
+                    </div>
+
+                    <span className={styles.cardCta}>
+                      <span>Scopri di più</span>
+                      <HiOutlineArrowRight className={styles.cardCtaIcon} />
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className={styles.footer}>

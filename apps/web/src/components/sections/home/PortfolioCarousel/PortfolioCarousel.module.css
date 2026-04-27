@@ -8,7 +8,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 32px;
   align-items: end;
   margin-bottom: 42px;
@@ -40,9 +40,27 @@
   color: rgba(162, 166, 195, 0.92);
 }
 
-.controls {
+.headerControls {
+  display: none;
+}
+
+.carouselViewport {
+  position: relative;
+}
+
+.overlayControls {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: max(16px, calc(var(--container-padding) - 6px));
+  pointer-events: none;
+}
+
+.overlayControls .navButton {
+  pointer-events: auto;
 }
 
 .navButton {
@@ -76,9 +94,15 @@
   display: flex;
   gap: clamp(18px, 2.2vw, 26px);
   overflow-x: auto;
+  overflow-y: visible;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   scrollbar-width: none;
   padding-inline: max(
+    var(--container-padding),
+    calc((100vw - min(820px, 66vw)) / 2)
+  );
+  scroll-padding-inline: max(
     var(--container-padding),
     calc((100vw - min(820px, 66vw)) / 2)
   );
@@ -266,15 +290,6 @@
 }
 
 @media (max-width: 900px) {
-  .header {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
-  .controls {
-    justify-content: flex-start;
-  }
-
   .meta {
     flex-direction: column;
     align-items: flex-start;
@@ -287,8 +302,24 @@
     padding-bottom: 104px;
   }
 
+  .header {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .headerControls {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+  }
+
+  .overlayControls {
+    display: none;
+  }
+
   .track {
     padding-inline: var(--container-padding);
+    scroll-padding-inline: var(--container-padding);
   }
 
   .card {

@@ -87,22 +87,43 @@ export default {
       fields: [
         {
           name: "video",
-          title: "Video",
+          title: "Video desktop",
           type: "file",
-          description: "Se presente, ha priorità sull'immagine.",
+          description: "Versione desktop. Se presente, ha priorità sull'immagine desktop.",
           options: {
             accept: "video/*",
           },
         },
         {
           name: "image",
-          title: "Immagine",
+          title: "Immagine desktop",
           type: "image",
           options: { hotspot: true },
         },
         {
           name: "imageAlt",
-          title: "Alt immagine",
+          title: "Alt immagine desktop",
+          type: "string",
+        },
+        {
+          name: "mobileVideo",
+          title: "Video mobile",
+          type: "file",
+          description:
+            "Versione mobile/verticale. Su mobile ha priorità sull'immagine mobile e, se presente, sulla media desktop.",
+          options: {
+            accept: "video/*",
+          },
+        },
+        {
+          name: "mobileImage",
+          title: "Immagine mobile",
+          type: "image",
+          options: { hotspot: true },
+        },
+        {
+          name: "mobileImageAlt",
+          title: "Alt immagine mobile",
           type: "string",
         },
       ],

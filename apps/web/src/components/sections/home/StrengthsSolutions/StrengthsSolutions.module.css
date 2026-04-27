@@ -134,7 +134,7 @@
 
 .solutionsHeader {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
   align-items: end;
   margin-bottom: 34px;
@@ -147,8 +147,29 @@
 }
 
 .controls {
+  display: none;
+}
+
+.cardsViewport {
+  position: relative;
+}
+
+.overlayControls {
+  position: absolute;
+  top: calc(50% + 18px);
+  left: 0;
+  right: 0;
+  z-index: 3;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 6px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.overlayControls .navButton {
+  pointer-events: auto;
 }
 
 .navButton {
@@ -183,9 +204,12 @@
   gap: 18px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   padding-top: 80px;
+  padding-inline: 72px;
+  scroll-padding-inline: 72px;
 }
 
 .cardsTrack::-webkit-scrollbar {
@@ -319,15 +343,6 @@
   .strengthsGrid {
     grid-template-columns: 1fr;
   }
-
-  .solutionsHeader {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
-  .controls {
-    justify-content: flex-start;
-  }
 }
 
 @media (max-width: 768px) {
@@ -339,6 +354,27 @@
 @media (max-width: 640px) {
   .section {
     padding: 104px 0;
+  }
+
+  .solutionsHeader {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+  }
+
+  .overlayControls {
+    display: none;
+  }
+
+  .cardsTrack {
+    padding-top: 80px;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
   }
 
   .solutionCard {

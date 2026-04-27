@@ -77,6 +77,7 @@ export default function StrengthsSolutions({
   data,
 }: StrengthsSolutionsProps) {
   const cardsTrackRef = useRef<HTMLDivElement>(null);
+  const solutionCardRefs = useRef<Array<HTMLElement | null>>([]);
   const blobsRef = useRef<HTMLSpanElement[]>([]);
 
   const eyebrow = data?.eyebrow?.trim() || "Perché Kerning";
@@ -111,25 +112,65 @@ export default function StrengthsSolutions({
     ? solutionCards
     : FALLBACK_SOLUTIONS;
 
-  const scrollCards = (direction: "prev" | "next") => {
+  const getClosestSolutionIndex = () => {
     const container = cardsTrackRef.current;
-    if (!container) return;
+    if (!container || !solutionCardRefs.current.length) return 0;
 
-    const amount = Math.max(container.clientWidth * 0.72, 280);
+    const currentLeft = container.scrollLeft;
 
-    container.scrollBy({
-      left: direction === "next" ? amount : -amount,
+    let closestIndex = 0;
+    let minDistance = Number.POSITIVE_INFINITY;
+
+    solutionCardRefs.current.forEach((card, index) => {
+      if (!card) return;
+
+      const distance = Math.abs(card.offsetLeft - currentLeft);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    return closestIndex;
+  };
+
+  const scrollToSolutionIndex = (index: number) => {
+    const container = cardsTrackRef.current;
+    const card = solutionCardRefs.current[index];
+
+    if (!container || !card) return;
+
+    container.scrollTo({
+      left: card.offsetLeft,
       behavior: "smooth",
     });
   };
 
+  const handleNavigateSolutions = (direction: "prev" | "next") => {
+    if (!visibleSolutions.length) return;
+
+    const currentIndex = getClosestSolutionIndex();
+    const delta = direction === "next" ? 1 : -1;
+    const nextIndex = Math.max(
+      0,
+      Math.min(visibleSolutions.length - 1, currentIndex + delta)
+    );
+
+    scrollToSolutionIndex(nextIndex);
+  };
+
   useEffect(() => {
+    const isTouch =
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
     const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isTouch) return;
 
     const random = gsap.utils.random;
 
@@ -229,7 +270,7 @@ export default function StrengthsSolutions({
               <button
                 type="button"
                 className={styles.navButton}
-                onClick={() => scrollCards("prev")}
+                onClick={() => handleNavigateSolutions("prev")}
                 aria-label="Card precedente"
               >
                 <HiOutlineArrowLeft />
@@ -238,7 +279,7 @@ export default function StrengthsSolutions({
               <button
                 type="button"
                 className={styles.navButton}
-                onClick={() => scrollCards("next")}
+                onClick={() => handleNavigateSolutions("next")}
                 aria-label="Card successiva"
               >
                 <HiOutlineArrowRight />
@@ -246,36 +287,61 @@ export default function StrengthsSolutions({
             </div>
           </div>
 
-          <div ref={cardsTrackRef} className={styles.cardsTrack}>
-            {visibleSolutions.map((card, index) => (
-              <article
-                key={card._key || `${card.title}-${index}`}
-                className={styles.solutionCard}
+          <div className={styles.cardsViewport}>
+            <div className={styles.overlayControls} aria-hidden="true">
+              <button
+                type="button"
+                className={styles.navButton}
+                onClick={() => handleNavigateSolutions("prev")}
+                aria-label="Card precedente"
               >
-                {card.hoverImageUrl ? (
-                  <div className={styles.hoverThumb}>
-                    <img
-                      src={card.hoverImageUrl}
-                      alt={card.hoverImageAlt || card.title || "Solution image"}
-                      className={styles.hoverThumbImage}
-                    />
-                  </div>
-                ) : null}
+                <HiOutlineArrowLeft />
+              </button>
 
-                <span className={styles.solutionEyebrow}>
-                  {card.eyebrow || "Soluzione"}
-                </span>
-                <h4 className={styles.solutionTitle}>{card.title}</h4>
-                <p className={styles.solutionText}>{card.text}</p>
+              <button
+                type="button"
+                className={styles.navButton}
+                onClick={() => handleNavigateSolutions("next")}
+                aria-label="Card successiva"
+              >
+                <HiOutlineArrowRight />
+              </button>
+            </div>
 
-                <Link
-                  href={card.href?.trim() || "#"}
-                  className={styles.solutionLink}
+            <div ref={cardsTrackRef} className={styles.cardsTrack}>
+              {visibleSolutions.map((card, index) => (
+                <article
+                  key={card._key || `${card.title}-${index}`}
+                  ref={(element) => {
+                    solutionCardRefs.current[index] = element;
+                  }}
+                  className={styles.solutionCard}
                 >
-                  Scopri di più
-                </Link>
-              </article>
-            ))}
+                  {card.hoverImageUrl ? (
+                    <div className={styles.hoverThumb}>
+                      <img
+                        src={card.hoverImageUrl}
+                        alt={card.hoverImageAlt || card.title || "Solution image"}
+                        className={styles.hoverThumbImage}
+                      />
+                    </div>
+                  ) : null}
+
+                  <span className={styles.solutionEyebrow}>
+                    {card.eyebrow || "Soluzione"}
+                  </span>
+                  <h4 className={styles.solutionTitle}>{card.title}</h4>
+                  <p className={styles.solutionText}>{card.text}</p>
+
+                  <Link
+                    href={card.href?.trim() || "#"}
+                    className={styles.solutionLink}
+                  >
+                    Scopri di più
+                  </Link>
+                </article>
+              ))}
+            </div>
           </div>
 
           <div className={styles.footer}>

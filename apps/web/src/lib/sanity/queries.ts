@@ -102,7 +102,10 @@ export const homeQuery = groq`
     featureMedia{
       "videoUrl": video.asset->url,
       "imageUrl": image.asset->url,
-      imageAlt
+      imageAlt,
+      "mobileVideoUrl": mobileVideo.asset->url,
+      "mobileImageUrl": mobileImage.asset->url,
+      mobileImageAlt
     },
 
     portfolioPreview{
@@ -488,16 +491,19 @@ export const WEB_DESIGN_PAGE_QUERY = groq`
       text
     },
 
-    featureImage{
-      asset->{
-        url
+    "featureImage": {
+      "asset": {
+        "url": featureImage.asset->url
       },
-      alt
+      "alt": featureImage.alt,
+      "mobileUrl": featureImageMobile.asset->url,
+      "mobileAlt": coalesce(featureImageMobile.alt, featureImage.alt)
     },
-    featureVideo{
-      asset->{
-        url
-      }
+    "featureVideo": {
+      "asset": {
+        "url": featureVideo.asset->url
+      },
+      "mobileUrl": featureVideoMobile.asset->url
     },
 
     pillarsTitle,
@@ -589,16 +595,19 @@ export const SOCIAL_ADVERTISING_PAGE_QUERY = groq`
       text
     },
 
-    featureImage{
-      asset->{
-        url
+    "featureImage": {
+      "asset": {
+        "url": featureImage.asset->url
       },
-      alt
+      "alt": featureImage.alt,
+      "mobileUrl": featureImageMobile.asset->url,
+      "mobileAlt": coalesce(featureImageMobile.alt, featureImage.alt)
     },
-    featureVideo{
-      asset->{
-        url
-      }
+    "featureVideo": {
+      "asset": {
+        "url": featureVideo.asset->url
+      },
+      "mobileUrl": featureVideoMobile.asset->url
     },
 
     pillarsTitle,
@@ -690,16 +699,19 @@ export const BRAND_IDENTITY_PAGE_QUERY = groq`
       text
     },
 
-    featureImage{
-      asset->{
-        url
+    "featureImage": {
+      "asset": {
+        "url": featureImage.asset->url
       },
-      alt
+      "alt": featureImage.alt,
+      "mobileUrl": featureImageMobile.asset->url,
+      "mobileAlt": coalesce(featureImageMobile.alt, featureImage.alt)
     },
-    featureVideo{
-      asset->{
-        url
-      }
+    "featureVideo": {
+      "asset": {
+        "url": featureVideo.asset->url
+      },
+      "mobileUrl": featureVideoMobile.asset->url
     },
 
     pillarsTitle,
@@ -791,16 +803,19 @@ export const CUSTOM_PROJECTS_PAGE_QUERY = groq`
       text
     },
 
-    featureImage{
-      asset->{
-        url
+    "featureImage": {
+      "asset": {
+        "url": featureImage.asset->url
       },
-      alt
+      "alt": featureImage.alt,
+      "mobileUrl": featureImageMobile.asset->url,
+      "mobileAlt": coalesce(featureImageMobile.alt, featureImage.alt)
     },
-    featureVideo{
-      asset->{
-        url
-      }
+    "featureVideo": {
+      "asset": {
+        "url": featureVideo.asset->url
+      },
+      "mobileUrl": featureVideoMobile.asset->url
     },
 
     pillarsTitle,
