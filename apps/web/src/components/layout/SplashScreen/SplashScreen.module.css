@@ -1,0 +1,373 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(16, 74, 156, 0.24), transparent 26%),
+    radial-gradient(circle at 82% 22%, rgba(238, 98, 36, 0.2), transparent 24%),
+    radial-gradient(circle at 50% 72%, rgba(9, 27, 72, 0.3), transparent 30%),
+    linear-gradient(180deg, #010118 0%, #000020 42%, #030321 100%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:global(html.show-initial-splash) .overlay {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.exiting {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+:global(html.preload-site) {
+  overflow: hidden;
+}
+
+:global(html.show-initial-splash) {
+  overflow: hidden;
+}
+
+:global(html.preload-site) :global(body),
+:global(html.show-initial-splash) :global(body) {
+  overflow: hidden;
+}
+
+:global(html.preload-site) :global(#site-shell),
+:global(html.show-initial-splash) :global(#site-shell) {
+  opacity: 0;
+  visibility: hidden;
+}
+
+:global(html.app-ready) :global(#site-shell) {
+  opacity: 1;
+  visibility: visible;
+}
+
+.backdropGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.04), transparent 18%),
+    radial-gradient(circle at 50% 44%, rgba(16, 74, 156, 0.18), transparent 24%),
+    radial-gradient(circle at 50% 56%, rgba(238, 98, 36, 0.12), transparent 28%);
+  filter: blur(24px);
+  opacity: 0.9;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 540px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  opacity: 0;
+  transform: translateY(16px) scale(0.986);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.entered .content {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.iconShell {
+  position: relative;
+  width: clamp(88px, 10vw, 120px);
+  height: clamp(88px, 10vw, 120px);
+  display: grid;
+  place-items: center;
+  border-radius: 28px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.018)
+    ),
+    rgba(6, 6, 33, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.iconShell::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background: conic-gradient(
+    from 180deg,
+    rgba(255, 255, 255, 0) 0deg,
+    rgba(16, 74, 156, 0.22) 110deg,
+    rgba(238, 98, 36, 0.18) 210deg,
+    rgba(255, 255, 255, 0) 360deg
+  );
+  filter: blur(14px);
+  opacity: 0.65;
+  animation: haloRotate 3.2s linear infinite;
+}
+
+.iconVisual {
+  position: relative;
+  z-index: 1;
+  width: 62%;
+  height: 62%;
+  object-fit: contain;
+  animation:
+    iconFloat 1.45s ease-in-out infinite alternate,
+    iconRotate 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.iconFallback {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-title);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  letter-spacing: 0.08em;
+  color: #ffffff;
+}
+
+.wordmarkStage {
+  position: relative;
+  width: min(76vw, 360px);
+  aspect-ratio: 5.2 / 1;
+}
+
+.wordmarkBase {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: brightness(0) invert(1);
+  opacity: 0.96;
+}
+
+.wordmarkLiquidMask {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask-image: url("/testo-kerning.png");
+  mask-image: url("/testo-kerning.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.liquidBody {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -118%;
+  height: 210%;
+  background:
+    linear-gradient(180deg, #1550af 0%, #1c69cb 34%, #ee6224 100%);
+  transition: bottom 1.45s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.entered .liquidBody {
+  bottom: -5%;
+}
+
+.waveFront,
+.waveBack {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  border-radius: 46%;
+}
+
+.waveFront {
+  top: -28px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.26);
+  opacity: 0.42;
+  animation: waveMoveA 2.4s linear infinite;
+  filter: blur(2px);
+}
+
+.waveBack {
+  top: -20px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.14);
+  opacity: 0.34;
+  animation: waveMoveB 3.1s linear infinite;
+  filter: blur(1px);
+}
+
+.textFallback {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.textBase,
+.textLiquidMask {
+  grid-area: 1 / 1;
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.textBase {
+  color: #ffffff;
+}
+
+.textLiquidMask {
+  position: relative;
+  overflow: hidden;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.textLiquidBody {
+  position: absolute;
+  inset: auto 0 -120% 0;
+  height: 220%;
+  background:
+    linear-gradient(180deg, #1550af 0%, #1c69cb 34%, #ee6224 100%);
+  transition: bottom 1.45s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.entered .textLiquidBody {
+  bottom: -6%;
+}
+
+.progressTrack {
+  position: relative;
+  width: min(72vw, 250px);
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progressFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #104a9c 0%, #ee6224 100%);
+  transition: transform 1.3s cubic-bezier(0.22, 1, 0.36, 1) 0.08s;
+}
+
+.entered .progressFill {
+  transform: scaleX(1);
+}
+
+@keyframes iconRotate {
+  0% {
+    transform: rotate(0deg) scale(0.98);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.02);
+  }
+  100% {
+    transform: rotate(360deg) scale(0.98);
+  }
+}
+
+@keyframes iconFloat {
+  0% {
+    translate: 0 -2px;
+  }
+  100% {
+    translate: 0 2px;
+  }
+}
+
+@keyframes haloRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes waveMoveA {
+  0% {
+    transform: translateX(-4%) scaleX(1);
+  }
+  50% {
+    transform: translateX(4%) scaleX(1.02);
+  }
+  100% {
+    transform: translateX(-4%) scaleX(1);
+  }
+}
+
+@keyframes waveMoveB {
+  0% {
+    transform: translateX(5%) scaleX(1.04);
+  }
+  50% {
+    transform: translateX(-5%) scaleX(0.98);
+  }
+  100% {
+    transform: translateX(5%) scaleX(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iconShell::before,
+  .iconVisual,
+  .waveFront,
+  .waveBack {
+    animation: none;
+  }
+
+  .content,
+  .overlay,
+  .liquidBody,
+  .textLiquidBody,
+  .progressFill {
+    transition-duration: 0.2s;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    gap: 22px;
+  }
+
+  .iconShell {
+    border-radius: 24px;
+  }
+
+  .wordmarkStage {
+    width: min(84vw, 320px);
+  }
+
+  .progressTrack {
+    width: min(76vw, 220px);
+  }
+}

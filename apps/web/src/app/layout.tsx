@@ -7,9 +7,9 @@ import "../app/globals.css";
 import Header from "@/components/layout/Header/Header";
 import Footer from "@/components/layout/Footer/Footer";
 import PageTransition from "@/components/layout/PageTransition/PageTransition";
+import SplashScreen from "@/components/layout/SplashScreen/SplashScreen";
 import PerformanceMode from "@/components/ui/PerformanceMode/PerformanceMode";
 
-// SANITY
 import { sanityFetch } from "@/lib/sanity/fetch";
 import {
   footerQuery,
@@ -115,8 +115,49 @@ export default async function RootLayout({
   const cookiebotId = settings?.cookiebotId?.trim();
 
   return (
-    <html lang="it" className={`${monument.variable} ${inter.variable}`}>
+    <html
+      lang="it"
+      className={`${monument.variable} ${inter.variable} preload-site`}
+    >
       <body>
+        <Script
+          id="kerning-splash-bootstrap"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                var root = document.documentElement;
+                try {
+                  var key = "kerning-splash-seen";
+                  var seen = window.sessionStorage.getItem(key) === "1";
+
+                  if (seen) {
+                    root.classList.remove("preload-site");
+                    root.classList.add("app-ready");
+                  } else {
+                    root.classList.remove("preload-site");
+                    root.classList.add("show-initial-splash");
+                    window.sessionStorage.setItem(key, "1");
+                  }
+                } catch (e) {
+                  root.classList.remove("preload-site");
+                  root.classList.add("show-initial-splash");
+                }
+              })();
+            `,
+          }}
+        />
+
+        <noscript>
+          <style>{`
+            html.preload-site #site-shell {
+              opacity: 1 !important;
+              visibility: visible !important;
+            }
+          `}</style>
+        </noscript>
+
+        <SplashScreen />
         <PerformanceMode />
 
         {cookiebotId ? (
@@ -129,11 +170,11 @@ export default async function RootLayout({
           />
         ) : null}
 
-        <Header data={headerData} />
-
-        <PageTransition>{children}</PageTransition>
-
-        <Footer data={footerData} />
+        <div id="site-shell">
+          <Header data={headerData} />
+          <PageTransition>{children}</PageTransition>
+          <Footer data={footerData} />
+        </div>
       </body>
     </html>
   );
