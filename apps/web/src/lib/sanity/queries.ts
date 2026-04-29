@@ -188,6 +188,7 @@ export const projectBySlugQuery = groq`
     ${SEO_FIELDS},
     title,
     category,
+    portfolioFilterCategory,
     "slug": slug.current,
 
     "coverImageUrl": coverImage.asset->url,
@@ -250,6 +251,7 @@ export const portfolioQuery = groq`
   *[_type == "project"] | order(_createdAt desc) {
     title,
     category,
+    portfolioFilterCategory,
     "slug": slug.current,
     "imageUrl": coverImage.asset->url
   }
@@ -280,6 +282,7 @@ export const portfolioProjectsOrderedQuery = groq`
     "projects": featuredProjects[]->{
       title,
       category,
+      portfolioFilterCategory,
       "slug": slug.current,
       "imageUrl": coverImage.asset->url
     }
@@ -290,6 +293,7 @@ export const portfolioProjectsFallbackQuery = groq`
   *[_type == "project"] | order(_createdAt desc){
     title,
     category,
+    portfolioFilterCategory,
     "slug": slug.current,
     "imageUrl": coverImage.asset->url
   }

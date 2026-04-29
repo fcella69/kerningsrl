@@ -29,9 +29,28 @@ export default {
 
     {
       name: "category",
-      title: "Tipologia progetto",
+      title: "Categoria visibile",
       type: "string",
-      description: "Es: Web Design, Brand Identity, Social & Advertising",
+      description:
+        "Testo libero mostrato nella card e nella pagina progetto. Resta indipendente dai filtri del portfolio.",
+    },
+
+    {
+      name: "portfolioFilterCategory",
+      title: "Categoria filtro portfolio",
+      type: "string",
+      description:
+        "Categoria usata esclusivamente per i filtri della pagina Portfolio.",
+      options: {
+        list: [
+          { title: "Sito Web", value: "Sito Web" },
+          { title: "Social", value: "Social" },
+          { title: "Grafica", value: "Grafica" },
+        ],
+        layout: "dropdown",
+      },
+      validation: (Rule: any) => Rule.required(),
+      initialValue: "Sito Web",
     },
 
     {

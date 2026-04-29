@@ -214,6 +214,75 @@
   z-index: 2;
 }
 
+.filtersBlock {
+  margin-bottom: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.filtersEyebrow {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(233, 235, 241, 0.56);
+}
+
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--font-title);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.84);
+  transition:
+    transform 0.28s ease,
+    background 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.filterButton:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.filterButtonActive {
+  transform: translateY(-2px) scale(1.08);
+  background: linear-gradient(135deg, #ee6224 0%, #ea8922 100%);
+  border-color: transparent;
+  color: #0b1020;
+  box-shadow: 0 14px 34px rgba(238, 98, 36, 0.2);
+}
+
+.filterButtonActive:hover {
+  transform: translateY(-2px) scale(1.08);
+  background: linear-gradient(135deg, #ee6224 0%, #ea8922 100%);
+  border-color: transparent;
+  color: #0b1020;
+  box-shadow: 0 14px 34px rgba(238, 98, 36, 0.2);
+}
+
 .sectionIntro {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -449,5 +518,22 @@
   .metaBottom {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .filtersRow {
+    gap: 10px;
+  }
+
+  .filterButton {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 0.64rem;
+  }
+
+  .filterButtonActive,
+  .filterButtonActive:hover {
+    transform: translateY(-1px) scale(1.04);
   }
 }

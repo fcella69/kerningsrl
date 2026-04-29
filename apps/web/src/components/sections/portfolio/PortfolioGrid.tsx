@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import { HiArrowRight } from "react-icons/hi";
 import styles from "./PortfolioGrid.module.css";
 
+type ProjectFilterCategory = "Sito Web" | "Social" | "Grafica";
+
 type Project = {
   title: string;
   category?: string;
+  portfolioFilterCategory?: string;
   imageUrl?: string;
   slug: string;
 };
@@ -25,6 +28,15 @@ type Props = {
   projects?: Project[];
 };
 
+type FilterValue = "all" | ProjectFilterCategory;
+
+const FILTERS: Array<{ label: string; value: FilterValue }> = [
+  { label: "Tutti i progetti", value: "all" },
+  { label: "Siti Web", value: "Sito Web" },
+  { label: "Social", value: "Social" },
+  { label: "Grafiche", value: "Grafica" },
+];
+
 export default function PortfolioGrid({
   heroEyebrow = "Portfolio",
   title = "Portfolio",
@@ -35,11 +47,22 @@ export default function PortfolioGrid({
   emptyStateText = "Portfolio in caricamento…",
   projects = [],
 }: Props) {
+  const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
+
   const mouseGlowRef = useRef<HTMLDivElement>(null);
   const blobsRef = useRef<HTMLDivElement[]>([]);
   const heroInnerRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
   const sectionIntroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === "all") return projects;
+
+    return projects.filter(
+      (project) => project.portfolioFilterCategory === activeFilter
+    );
+  }, [activeFilter, projects]);
 
   useEffect(() => {
     const prefersReducedMotion =
@@ -47,9 +70,13 @@ export default function PortfolioGrid({
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    const isTouch =
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
     const rand = gsap.utils.random;
 
-    if (!prefersReducedMotion) {
+    if (!prefersReducedMotion && !isTouch) {
       const animateBlob = (blob: HTMLDivElement) => {
         gsap.to(blob, {
           x: rand(-window.innerWidth * 0.7, window.innerWidth * 0.7),
@@ -83,7 +110,7 @@ export default function PortfolioGrid({
     }
 
     const glow = mouseGlowRef.current;
-    if (!glow) return;
+    if (!glow || isTouch) return;
 
     const quickX = gsap.quickTo(glow, "x", {
       duration: 0.25,
@@ -110,6 +137,7 @@ export default function PortfolioGrid({
 
   useEffect(() => {
     const heroInner = heroInnerRef.current;
+    const filters = filtersRef.current;
     const sectionIntro = sectionIntroRef.current;
     const grid = gridRef.current;
 
@@ -123,6 +151,20 @@ export default function PortfolioGrid({
           duration: 0.9,
           ease: "power4.out",
           stagger: 0.08,
+        }
+      );
+    }
+
+    if (filters) {
+      gsap.fromTo(
+        filters,
+        { y: 24, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          delay: 0.14,
         }
       );
     }
@@ -164,7 +206,7 @@ export default function PortfolioGrid({
     revealTargets.forEach((element) => observer.observe(element));
 
     return () => observer.disconnect();
-  }, [projects.length]);
+  }, [filteredProjects.length, activeFilter]);
 
   return (
     <>
@@ -196,6 +238,7 @@ export default function PortfolioGrid({
 
       <section className={styles.section}>
         <div className={`container ${styles.sectionInner}`}>
+
           <div ref={sectionIntroRef} className={styles.sectionIntro}>
             <div className={styles.sectionCopy}>
               <span className={styles.sectionEyebrow}>{sectionEyebrow}</span>
@@ -204,21 +247,42 @@ export default function PortfolioGrid({
 
             <div className={styles.sectionMeta}>
               <span className={styles.projectsCount}>
-                {String(projects.length).padStart(2, "0")} {projectsCountSuffix}
+                {String(filteredProjects.length).padStart(2, "0")}{" "}
+                {projectsCountSuffix}
               </span>
             </div>
           </div>
 
+          <div ref={filtersRef} className={styles.filtersBlock}>
+
+            <div className={styles.filtersRow}>
+              {FILTERS.map((filter) => {
+                const isActive = activeFilter === filter.value;
+
+                return (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    className={`${styles.filterButton} ${isActive ? styles.filterButtonActive : ""
+                      }`}
+                    onClick={() => setActiveFilter(filter.value)}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div ref={gridRef} className={styles.grid}>
-            {projects.length === 0 ? (
+            {filteredProjects.length === 0 ? (
               <div className={styles.empty}>{emptyStateText}</div>
             ) : (
-              projects.map((project, index) => (
+              filteredProjects.map((project, index) => (
                 <article
                   key={project.slug}
-                  className={`${styles.card} ${
-                    index % 2 === 1 ? styles.cardOffset : ""
-                  }`}
+                  className={`${styles.card} ${index % 2 === 1 ? styles.cardOffset : ""
+                    }`}
                   data-card="project"
                 >
                   <Link

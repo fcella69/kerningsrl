@@ -13,6 +13,7 @@ import {
 type Project = {
   title: string;
   category?: string;
+  portfolioFilterCategory?: string;
   slug: string;
   imageUrl?: string;
 };
