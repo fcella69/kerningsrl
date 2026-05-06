@@ -98,25 +98,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-    async headers() {
-    return [
-      {
-        source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "kerningsrl-web.vercel.app",
-          },
-        ],
-        headers: [
-          {
-            key: "X-Robots-Tag",
-            value: "noindex, nofollow",
-          },
-        ],
-      },
-    ];
-  },
+
   
 };
 
